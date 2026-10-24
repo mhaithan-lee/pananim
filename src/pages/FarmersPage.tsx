@@ -62,7 +62,14 @@ export const FarmersPage: React.FC<FarmersPageProps> = ({ farms, onNavigate }) =
           {filteredFarms.map((farm) => (
             <div key={farm.id} className="card card-hover" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
               <div style={{ height: '160px', position: 'relative' }}>
-                <img src={farm.coverImageUrl} alt={farm.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                <img 
+                  src={farm.coverImageUrl} 
+                  alt={farm.name} 
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80';
+                  }}
+                />
                 <img 
                   src={farm.avatarUrl} 
                   alt={farm.farmerName} 

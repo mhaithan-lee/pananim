@@ -65,7 +65,7 @@ export const mockFarms: Farm[] = [
     name: 'Benguet Highland Growers Coop',
     farmerName: 'Elena Flores (Lead Coordinator)',
     avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
-    coverImageUrl: 'https://images.unsplash.com/photo-1592982537447-6f2a6a0c5c1c?auto=format&fit=crop&w=1200&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80',
     sellerType: 'cooperative',
     cooperativeRegistrationNumber: 'CDA-CAR-2018-0941',
     region: 'Cordillera Administrative Region (CAR)',

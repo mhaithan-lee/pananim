@@ -37,6 +37,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
+  const [heroPhoto, setHeroPhoto] = useState<'/images/hero-farmer-sunlit.png' | '/images/hero-farmer-basket.png'>('/images/hero-farmer-sunlit.png');
 
   const featuredCrops = cropListings.slice(0, 8);
   const featuredFarms = farms.slice(0, 4);
@@ -75,12 +76,43 @@ export const HomePage: React.FC<HomePageProps> = ({
 
   return (
     <div>
-      {/* 1. HERO SECTION (Section 4.3) */}
-      <section className="hero-banner">
+      {/* 1. HERO SECTION (Section 4.3) with Attached Banner Picture */}
+      <section 
+        className="hero-banner"
+        style={{
+          backgroundImage: `url(${heroPhoto})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'right center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <div className="container">
           <div className="hero-content">
-            <div className="hero-eyebrow">
-              <Sparkles size={16} /> ONE NETWORK, SHARED GROWTH
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div className="hero-eyebrow" style={{ margin: 0 }}>
+                <Sparkles size={16} /> ONE NETWORK, SHARED GROWTH
+              </div>
+              <button
+                type="button"
+                onClick={() => setHeroPhoto(prev => prev.includes('sunlit') ? '/images/hero-farmer-basket.png' : '/images/hero-farmer-sunlit.png')}
+                style={{
+                  background: 'rgba(7, 39, 28, 0.75)',
+                  color: '#92DEB9',
+                  border: '1px solid #92DEB9',
+                  borderRadius: '20px',
+                  padding: '0.25rem 0.75rem',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  backdropFilter: 'blur(4px)'
+                }}
+                title="Switch between the 2 attached hero banner pictures"
+              >
+                🔄 Switch Banner: {heroPhoto.includes('sunlit') ? 'Photo 2 (Sunlit Field)' : 'Photo 1 (Harvest Basket)'}
+              </button>
             </div>
             <h1 className="hero-title">
               Fresh Harvests.<br />Direct Connections.
@@ -468,7 +500,14 @@ export const HomePage: React.FC<HomePageProps> = ({
             {featuredFarms.map((farm) => (
               <div key={farm.id} className="card card-hover" style={{ backgroundColor: '#FFFFFF', display: 'flex', flexDirection: 'column' }}>
                 <div style={{ height: '140px', position: 'relative' }}>
-                  <img src={farm.coverImageUrl} alt={farm.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  <img 
+                    src={farm.coverImageUrl} 
+                    alt={farm.name} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80';
+                    }}
+                  />
                   <img 
                     src={farm.avatarUrl} 
                     alt={farm.farmerName} 

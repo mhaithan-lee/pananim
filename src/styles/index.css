@@ -345,21 +345,22 @@ input:focus, select:focus, textarea:focus {
 
 /* Hero Section */
 .hero-banner {
-  background: linear-gradient(135deg, #07271C 0%, #0C3C2C 60%, #16533F 100%);
+  background-color: #07271C;
   color: var(--color-white);
   position: relative;
   overflow: hidden;
-  padding: 5rem 0 6rem 0;
+  padding: 5.5rem 0 6.5rem 0;
 }
 
 .hero-banner::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url('https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=2000&q=85');
+  background-image: url('/images/hero-farmer-sunlit.png');
   background-size: cover;
-  background-position: center 35%;
-  opacity: 0.48;
+  background-position: right center;
+  background-repeat: no-repeat;
+  opacity: 1;
   pointer-events: none;
 }
 
@@ -367,7 +368,7 @@ input:focus, select:focus, textarea:focus {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(7, 39, 28, 0.3) 0%, rgba(7, 39, 28, 0.85) 100%);
+  background: linear-gradient(90deg, rgba(7, 39, 28, 0.75) 0%, rgba(7, 39, 28, 0.3) 55%, rgba(7, 39, 28, 0) 100%);
   pointer-events: none;
 }
 
