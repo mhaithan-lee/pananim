@@ -72,6 +72,33 @@ export const FarmersPage: React.FC<FarmersPageProps> = ({ farms, onNavigate }) =
                     (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80';
                   }}
                 />
+                {farm.verificationStatus === 'verified' && (
+                  <span 
+                    style={{
+                      position: 'absolute',
+                      top: '12px',
+                      right: '12px',
+                      zIndex: 2,
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      color: '#0C3C2C',
+                      border: '1px solid #A3D9BD',
+                      padding: '0.25rem 0.65rem',
+                      borderRadius: '20px',
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
+                      backdropFilter: 'blur(4px)'
+                    }}
+                  >
+                    <CheckCircle size={12} color="#166534" />
+                    VERIFIED
+                  </span>
+                )}
                 <img 
                   src={farm.avatarUrl} 
                   alt={farm.farmerName} 
@@ -90,13 +117,8 @@ export const FarmersPage: React.FC<FarmersPageProps> = ({ farms, onNavigate }) =
               </div>
 
               <div style={{ padding: '2.25rem 1.5rem 1.5rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.35rem' }}>
+                <div style={{ marginBottom: '0.35rem' }}>
                   <h3 style={{ fontSize: '1.25rem', color: '#0C3C2C' }}>{farm.name}</h3>
-                  {farm.verificationStatus === 'verified' && (
-                    <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>
-                      <CheckCircle size={10} /> Verified
-                    </span>
-                  )}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', color: '#8A7B76', fontSize: '0.825rem', marginBottom: '0.85rem' }}>
