@@ -628,3 +628,14 @@ input:focus, select:focus, textarea:focus {
     box-shadow: none !important;
   }
 }
+
+/* Mobile sticky bar for purchase actions + chat */
+.mobile-sticky-bar {
+  display: flex !important;
+}
+
+@media (min-width: 768px) {
+  .mobile-sticky-bar {
+    display: none !important;
+  }
+}

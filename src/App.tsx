@@ -26,6 +26,8 @@ import {
 import { DevScenarioBar } from './components/DevScenarioBar';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { ChatDrawer } from './components/ChatDrawer';
+import { ChatProvider } from './context/ChatContext';
 
 // Pages
 import { HomePage } from './pages/HomePage';
@@ -73,6 +75,7 @@ import {
   ServiceUnavailablePage, 
   SessionExpiredPage 
 } from './pages/ErrorPages';
+import { MessagesInboxPage } from './pages/MessagesInboxPage';
 
 export const App: React.FC = () => {
   // Application State
@@ -449,6 +452,14 @@ export const App: React.FC = () => {
       return <DeliveriesTrackingHubPage isFarmer={false} onNavigate={navigate} />;
     }
 
+    if (currentRoute === '/buyer/messages') {
+      return <MessagesInboxPage isFarmer={false} onNavigate={navigate} />;
+    }
+
+    if (currentRoute === '/farmer/messages') {
+      return <MessagesInboxPage isFarmer={true} onNavigate={navigate} />;
+    }
+
     if (currentRoute === '/farmer/storefront') {
       return (
         <FarmerStorefrontPage 
@@ -516,33 +527,44 @@ export const App: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      {/* Dev Scenario and Route Navigator Bar */}
-      <DevScenarioBar 
-        currentRole={currentRole} 
-        onSwitchRole={handleSwitchRole} 
-        currentRoute={currentRoute} 
-        onNavigate={navigate} 
-        onLoadWorkedExample950={handleLoadWorkedExample950}
-      />
+    <ChatProvider currentUser={currentUser} onNavigate={navigate} farms={farms}>
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        {/* Dev Scenario and Route Navigator Bar */}
+        <DevScenarioBar 
+          currentRole={currentRole} 
+          onSwitchRole={handleSwitchRole} 
+          currentRoute={currentRoute} 
+          onNavigate={navigate} 
+          onLoadWorkedExample950={handleLoadWorkedExample950}
+        />
 
-      {/* Main Top Header Navbar matching Screenshot 215453 */}
-      <Navbar 
-        currentRoute={currentRoute} 
-        onNavigate={navigate} 
-        currentUser={currentUser} 
-        currentRole={currentRole} 
-        cartCount={cartItems.length} 
-        onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
-      />
+        {/* Main Top Header Navbar matching Screenshot 215453 */}
+        <Navbar 
+          currentRoute={currentRoute} 
+          onNavigate={navigate} 
+          currentUser={currentUser} 
+          currentRole={currentRole} 
+          cartCount={cartItems.length} 
+          onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
+        />
 
-      {/* Main Page Body */}
-      <main style={{ flex: 1 }}>
-        {renderRoute()}
-      </main>
+        {/* Main Page Body */}
+        <main style={{ flex: 1 }}>
+          {renderRoute()}
+        </main>
 
-      {/* Brand Footer matching Screenshot 215453 */}
-      <Footer onNavigate={navigate} />
-    </div>
+        {/* Global Chat with Seller Drawer / Fullscreen Mobile View */}
+        <ChatDrawer 
+          onNavigate={navigate} 
+          onLoginAsBuyer={() => {
+            setCurrentUser(currentUserBuyer);
+            setCurrentRole('buyer');
+          }}
+        />
+
+        {/* Brand Footer matching Screenshot 215453 */}
+        <Footer onNavigate={navigate} />
+      </div>
+    </ChatProvider>
   );
 };

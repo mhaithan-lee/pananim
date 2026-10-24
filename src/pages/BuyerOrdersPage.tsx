@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Camera
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface BuyerOrdersPageProps {
   orders: OrderGroup[];
@@ -27,6 +28,7 @@ export const BuyerOrdersPage: React.FC<BuyerOrdersPageProps> = ({
   onNavigate,
   onTrackOrder
 }) => {
+  const { openChatWithSeller, unreadCount } = useChat();
   const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
   const [searchId, setSearchId] = useState('');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
@@ -93,6 +95,40 @@ export const BuyerOrdersPage: React.FC<BuyerOrdersPageProps> = ({
               }}
             >
               Order History
+            </button>
+            <button
+              onClick={() => onNavigate('/buyer/messages')}
+              style={{
+                fontFamily: 'var(--font-headings)',
+                fontWeight: 700,
+                fontSize: '1rem',
+                color: '#8A7B76',
+                borderBottom: '3px solid transparent',
+                paddingBottom: '0.75rem',
+                marginBottom: '-2px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem'
+              }}
+            >
+              <MessageSquare size={16} />
+              Messages
+              {unreadCount > 0 && (
+                <span
+                  style={{
+                    backgroundColor: '#9B3C1B',
+                    color: '#FFFFFF',
+                    fontSize: '0.7rem',
+                    fontWeight: 700,
+                    borderRadius: '10px',
+                    padding: '0.1rem 0.45rem',
+                    lineHeight: 1
+                  }}
+                  aria-label={`${unreadCount} unread messages`}
+                >
+                  {unreadCount}
+                </span>
+              )}
             </button>
           </div>
 
@@ -289,7 +325,21 @@ export const BuyerOrdersPage: React.FC<BuyerOrdersPageProps> = ({
                     ))}
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    <button
+                      onClick={() => openChatWithSeller(order.sellerOrders[0]?.farmId || 'farm-001', {
+                        type: 'order',
+                        title: `Order Reference #${order.id}`,
+                        subtitle: `${order.sellerOrders[0]?.farmName || 'Grower'} • ${order.sellerOrders[0]?.items.map(it => `${it.cropName} (${it.quantity}${it.unit})`).join(', ')} • ₱${order.grandTotal.toLocaleString()}`,
+                        referenceId: order.id,
+                        disclaimer: 'Chat messages are for seller dispatch and harvest coordination. For formal shortages, cancellations, or damage claims, use Report Issue.'
+                      })}
+                      className="btn btn-outline-warm btn-sm"
+                      style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', borderColor: '#0C3C2C', color: '#0C3C2C' }}
+                      aria-label={`Chat with seller: ${order.sellerOrders[0]?.farmName || 'Grower'}`}
+                    >
+                      <MessageSquare size={14} /> Chat with seller
+                    </button>
                     <button
                       onClick={() => onNavigate(`/buyer/orders/${order.id}/issue`)}
                       className="btn btn-outline-warm btn-sm"
@@ -482,16 +532,34 @@ export const BuyerOrdersPage: React.FC<BuyerOrdersPageProps> = ({
 
               {/* Modal Action Buttons */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                <button 
-                  onClick={() => {
-                    setShowDetailsModal(false);
-                    setShowReviewModal(true);
-                  }}
-                  className="btn btn-accent btn-sm"
-                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
-                >
-                  <Star size={14} fill="#FFFFFF" /> Give Us a Review
-                </button>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                  <button 
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      openChatWithSeller('farm-001', {
+                        type: 'order',
+                        title: 'Order Details #ORD-2026-8712',
+                        subtitle: 'Pura Agri Hub Harvest (Tarlac) • ₱1,625.00 Settled',
+                        referenceId: 'ORD-2026-8712'
+                      });
+                    }}
+                    className="btn btn-outline-warm btn-sm"
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, borderColor: '#0C3C2C', color: '#0C3C2C' }}
+                    aria-label="Chat with seller: Pura Agri Hub Harvest"
+                  >
+                    <MessageSquare size={13} /> Chat with seller
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      setShowReviewModal(true);
+                    }}
+                    className="btn btn-accent btn-sm"
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700 }}
+                  >
+                    <Star size={14} fill="#FFFFFF" /> Give Us a Review
+                  </button>
+                </div>
                 <div style={{ display: 'flex', gap: '0.75rem' }}>
                   <button 
                     onClick={() => {

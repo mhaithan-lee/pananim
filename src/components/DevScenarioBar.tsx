@@ -79,6 +79,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
         { path: '/buyer/orders/ORD-2026-8842/issue', label: '38 /buyer/orders/:id/issue Dispute' },
         { path: '/buyer/reviews', label: '40 /buyer/reviews Verified Reviews' },
         { path: '/buyer/quotes', label: '42 /buyer/quotes Bulk Bids' },
+        { path: '/buyer/messages', label: 'Buyer Messages (Chat with Seller Inbox)' },
         { path: '/buyer/transactions', label: '45 /buyer/transactions Ledger' },
         { path: '/buyer/profile', label: '49 /buyer/profile Addresses & Settings' }
       ]
@@ -91,6 +92,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
         { path: '/farmer/inventory/new', label: '55 /farmer/inventory/new Listing' },
         { path: '/farmer/orders', label: '58 /farmer/orders Incoming Wholesale' },
         { path: '/farmer/quotes', label: '60 /farmer/quotes Bids & Counter' },
+        { path: '/farmer/messages', label: 'Farmer Messages (Buyer Inquiries Inbox)' },
         { path: '/farmer/transactions', label: '62 /farmer/transactions Sales Ledger' },
         { path: '/farmer/settlements', label: '63 /farmer/settlements Net Payout' },
         { path: '/farmer/deliveries', label: '64 /farmer/deliveries Transport' },

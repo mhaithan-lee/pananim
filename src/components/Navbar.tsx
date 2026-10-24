@@ -14,8 +14,10 @@ import {
   TrendingUp,
   MapPin,
   HelpCircle,
-  Truck
+  Truck,
+  MessageSquare
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface NavbarProps {
   currentRoute: string;
@@ -39,6 +41,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cropsDropdownOpen, setCropsDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const { totalUnreadBuyer, totalUnreadFarmer } = useChat();
+  const currentUnreadMessages = currentRole === 'farmer' ? totalUnreadFarmer : totalUnreadBuyer;
 
   const isActive = (path: string) => currentRoute === path;
 
@@ -359,6 +363,50 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
+            {/* Messages Inbox Icon with Live Unread Badge */}
+            <button
+              onClick={() => onNavigate(currentRole === 'farmer' ? '/farmer/messages' : '/buyer/messages')}
+              style={{
+                width: '38px',
+                height: '38px',
+                borderRadius: '50%',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #DECDBD',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#0C3C2C',
+                position: 'relative'
+              }}
+              aria-label={currentUnreadMessages > 0 ? `${currentUnreadMessages} unread messages` : "Messages inbox"}
+              title="Messages Inbox"
+            >
+              <MessageSquare size={18} />
+              {currentUnreadMessages > 0 && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    top: '-4px',
+                    right: '-4px',
+                    backgroundColor: '#9B3C1B',
+                    color: '#FFFFFF',
+                    fontSize: '0.675rem',
+                    fontWeight: 800,
+                    width: '18px',
+                    height: '18px',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    border: '2px solid #F5EDE2'
+                  }}
+                  aria-hidden="true"
+                >
+                  {currentUnreadMessages}
+                </span>
+              )}
+            </button>
+
             {/* Notifications */}
             {currentUser && (
               <button
@@ -467,6 +515,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                           <Truck size={15} /> My Orders
                         </button>
                         <button
+                          onClick={() => { onNavigate('/buyer/messages'); setUserDropdownOpen(false); }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <MessageSquare size={15} /> Messages
+                          </div>
+                          {totalUnreadBuyer > 0 && (
+                            <span style={{ backgroundColor: '#9B3C1B', color: '#FFFFFF', fontSize: '0.65rem', fontWeight: 800, padding: '1px 6px', borderRadius: '10px' }}>
+                              {totalUnreadBuyer}
+                            </span>
+                          )}
+                        </button>
+                        <button
                           onClick={() => { onNavigate('/buyer/profile'); setUserDropdownOpen(false); }}
                           style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
@@ -488,6 +549,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                           style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
                           <Package size={15} /> My Crop Inventory
+                        </button>
+                        <button
+                          onClick={() => { onNavigate('/farmer/messages'); setUserDropdownOpen(false); }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <MessageSquare size={15} /> Buyer Inquiries
+                          </div>
+                          {totalUnreadFarmer > 0 && (
+                            <span style={{ backgroundColor: '#9B3C1B', color: '#FFFFFF', fontSize: '0.65rem', fontWeight: 800, padding: '1px 6px', borderRadius: '10px' }}>
+                              {totalUnreadFarmer}
+                            </span>
+                          )}
                         </button>
                         <button
                           onClick={() => { onNavigate('/farmer/inventory/new'); setUserDropdownOpen(false); }}

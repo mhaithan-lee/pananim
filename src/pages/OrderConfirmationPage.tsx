@@ -9,8 +9,10 @@ import {
   MapPin, 
   Clock,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  MessageSquare
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface OrderConfirmationPageProps {
   order: OrderGroup;
@@ -21,6 +23,7 @@ export const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({
   order,
   onNavigate
 }) => {
+  const { openChatWithSeller } = useChat();
   return (
     <div style={{ padding: '3.5rem 0 6rem 0' }}>
       <div className="container" style={{ maxWidth: '880px' }}>
@@ -136,6 +139,38 @@ export const OrderConfirmationPage: React.FC<OrderConfirmationPageProps> = ({
                     ₱{(so.subtotal + so.deliveryFee).toFixed(2)}
                   </strong>
                 </div>
+              </div>
+
+              {/* Questions about your order? Chat with seller */}
+              <div 
+                style={{ 
+                  marginTop: '0.75rem', 
+                  paddingTop: '0.75rem', 
+                  borderTop: '1px dashed #EADECF', 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  flexWrap: 'wrap', 
+                  gap: '0.5rem' 
+                }}
+              >
+                <span style={{ fontSize: '0.8rem', color: '#574A46' }}>
+                  Questions about your order?
+                </span>
+                <button
+                  onClick={() => openChatWithSeller(so.farmId, {
+                    type: 'order',
+                    title: `Order #${order.id} (${so.farmName})`,
+                    subtitle: `${so.items.map(i => `${i.cropName} (${i.quantity}${i.unit})`).join(', ')} • Est. Arrival: ${so.estimatedDeliveryDate}`,
+                    referenceId: order.id,
+                    disclaimer: 'Direct communication with grower for harvest & dispatch notes.'
+                  })}
+                  className="btn btn-outline-warm btn-sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, borderColor: '#0C3C2C', color: '#0C3C2C' }}
+                  aria-label={`Chat with seller: ${so.farmName}`}
+                >
+                  <MessageSquare size={13} /> Chat with seller
+                </button>
               </div>
             </div>
           ))}

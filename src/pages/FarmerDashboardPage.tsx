@@ -12,8 +12,10 @@ import {
   Calendar,
   Save,
   Minus,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface FarmerDashboardProps {
   farmer: Farm;
@@ -30,6 +32,7 @@ export const FarmerDashboardPage: React.FC<FarmerDashboardProps> = ({
   onNavigate,
   onUpdateCropStock
 }) => {
+  const { unreadCount } = useChat();
   const [activeCropId, setActiveCropId] = useState(cropListings[0]?.id || 'crop-001');
   const [adjustmentMode, setAdjustmentMode] = useState<'add' | 'remove' | 'set'>('remove');
   const [adjustQuantity, setAdjustQuantity] = useState(200);
@@ -98,6 +101,37 @@ export const FarmerDashboardPage: React.FC<FarmerDashboardProps> = ({
                 style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: '#FFFFFF', borderColor: '#FFFFFF' }}
               >
                 Earnings
+              </button>
+              <button
+                onClick={() => onNavigate('/farmer/messages')}
+                className="btn btn-outline-warm"
+                style={{ 
+                  backgroundColor: 'rgba(255,255,255,0.1)', 
+                  color: '#FFFFFF', 
+                  borderColor: '#D48216',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}
+              >
+                <MessageSquare size={16} />
+                Buyer Inquiries
+                {unreadCount > 0 && (
+                  <span
+                    style={{
+                      backgroundColor: '#D48216',
+                      color: '#07271C',
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      borderRadius: '10px',
+                      padding: '0.1rem 0.45rem',
+                      lineHeight: 1
+                    }}
+                    aria-label={`${unreadCount} unread messages`}
+                  >
+                    {unreadCount}
+                  </span>
+                )}
               </button>
             </div>
           </div>

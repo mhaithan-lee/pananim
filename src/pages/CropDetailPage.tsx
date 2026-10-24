@@ -18,6 +18,7 @@ import {
   Sparkles,
   AlertCircle
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface CropDetailPageProps {
   crop: CropListing;
@@ -36,6 +37,7 @@ export const CropDetailPage: React.FC<CropDetailPageProps> = ({
   onAddToCart,
   onOpenQuoteModal
 }) => {
+  const { openChatWithSeller } = useChat();
   const [selectedImage, setSelectedImage] = useState(crop.imageUrl);
   const [quantity, setQuantity] = useState(crop.minOrderQuantity);
   const [inquiryText, setInquiryText] = useState(`Hi ${farm.farmerName}, I'm interested in your ${crop.name}. Could we discuss quantity and delivery arrangements?`);
@@ -367,23 +369,23 @@ export const CropDetailPage: React.FC<CropDetailPageProps> = ({
               </div>
             </div>
 
-            {/* Action Buttons matching Screenshot 215623 */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '0.75rem', marginBottom: '1rem' }}>
+            {/* Action Buttons: Add to cart / Buy now dominant */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: '0.75rem', marginBottom: '0.75rem' }}>
               <button
-                onClick={() => {
-                  const element = document.getElementById('contact-farmer-section');
-                  element?.scrollIntoView({ behavior: 'smooth' });
-                }}
+                onClick={() => onAddToCart(crop, quantity)}
                 className="btn btn-secondary"
                 style={{ fontWeight: 700 }}
               >
-                <MessageSquare size={16} /> Contact seller
+                Add to Cart
               </button>
 
               <button
-                onClick={() => onAddToCart(crop, quantity)}
+                onClick={() => {
+                  onAddToCart(crop, quantity);
+                  onNavigate('/checkout');
+                }}
                 className="btn btn-accent"
-                style={{ fontWeight: 700 }}
+                style={{ fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}
               >
                 <ShoppingCart size={16} /> Buy Now
               </button>
@@ -400,8 +402,38 @@ export const CropDetailPage: React.FC<CropDetailPageProps> = ({
               </button>
             </div>
 
+            {/* Secondary Outlined "Chat with seller" immediately below Add to cart / Buy now controls */}
+            <button
+              onClick={() => openChatWithSeller(crop.farmId, {
+                type: 'product',
+                title: `${crop.name} (${crop.variety})`,
+                subtitle: `${crop.farmName} • ${crop.municipality}, ${crop.province}`,
+                imageUrl: crop.imageUrl,
+                price: `₱${crop.pricePerUnit.toFixed(2)} / ${crop.unit}`,
+                unit: crop.packaging,
+                linkUrl: `/crops/${crop.id}`,
+                disclaimer: 'Product prices shown in chat are contextual wholesale benchmarks and not binding purchase contracts until confirmed via checkout.'
+              })}
+              className="btn btn-outline-warm"
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                fontWeight: 600,
+                borderColor: '#0C3C2C',
+                color: '#0C3C2C',
+                padding: '0.65rem 1rem',
+                marginBottom: '1rem'
+              }}
+              aria-label={`Chat with seller: ${farm.name}`}
+            >
+              <MessageSquare size={16} /> Chat with seller
+            </button>
+
             <p style={{ fontSize: '0.75rem', color: '#8A7B76', textAlign: 'center' }}>
-              Confirm your quantity and pickup arrangements directly with the farmer.
+              Confirm your quantity, harvest schedules, and pickup arrangements directly with the farmer.
             </p>
           </div>
         </div>
@@ -539,8 +571,35 @@ export const CropDetailPage: React.FC<CropDetailPageProps> = ({
               </div>
 
               <p style={{ fontSize: '0.85rem', color: '#574A46', marginBottom: '1.25rem' }}>
-                Interested in this harvest? Send {farm.farmerName} a message to discuss your needs.
+                Interested in this harvest? Send {farm.farmerName} a message or chat directly to discuss your needs.
               </p>
+
+              {/* Chat with seller entry point in Meet your grower section beside Visit farm */}
+              <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => openChatWithSeller(crop.farmId, {
+                    type: 'product',
+                    title: `${crop.name} (${crop.variety})`,
+                    subtitle: `${crop.farmName} • ${crop.province}`,
+                    imageUrl: crop.imageUrl,
+                    price: `₱${crop.pricePerUnit.toFixed(2)} / ${crop.unit}`
+                  })}
+                  className="btn btn-primary btn-sm"
+                  style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600 }}
+                  aria-label={`Chat with seller: ${farm.name}`}
+                >
+                  <MessageSquare size={14} /> Chat with seller
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => onNavigate(`/farmers/${farm.id}`)}
+                  className="btn btn-outline-warm btn-sm"
+                >
+                  Visit Farm Storefront &rarr;
+                </button>
+              </div>
 
               {inquirySent ? (
                 <div 
@@ -861,6 +920,48 @@ export const CropDetailPage: React.FC<CropDetailPageProps> = ({
           </div>
         </div>
       )}
+      {/* Mobile Compact Sticky Purchase & Chat Bar */}
+      <div 
+        className="mobile-sticky-bar"
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: '#FFFFFF',
+          borderTop: '1px solid #DECDBD',
+          padding: '0.65rem 1rem',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '0.75rem',
+          zIndex: 800,
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.08)'
+        }}
+      >
+        <button
+          onClick={() => openChatWithSeller(crop.farmId, {
+            type: 'product',
+            title: `${crop.name} (${crop.variety})`,
+            subtitle: `${crop.farmName} • ${crop.province}`,
+            imageUrl: crop.imageUrl,
+            price: `₱${crop.pricePerUnit.toFixed(2)} / ${crop.unit}`
+          })}
+          className="btn btn-outline-warm btn-sm"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontWeight: 600, flexShrink: 0, borderColor: '#0C3C2C', color: '#0C3C2C' }}
+          aria-label={`Chat with seller: ${farm.name}`}
+        >
+          <MessageSquare size={14} /> Chat with seller
+        </button>
+
+        <button
+          onClick={() => onAddToCart(crop, quantity)}
+          className="btn btn-accent btn-sm"
+          style={{ flex: 1, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.35rem' }}
+        >
+          <ShoppingCart size={15} /> Buy Now &bull; ₱{currentSubtotal.toLocaleString()}
+        </button>
+      </div>
     </div>
   );
 };

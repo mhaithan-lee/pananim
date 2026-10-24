@@ -10,8 +10,10 @@ import {
   AlertTriangle, 
   FileText,
   ShieldCheck,
-  Send
+  Send,
+  MessageSquare
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface InvoicePageProps {
   order: OrderGroup;
@@ -163,6 +165,7 @@ export const OrderTrackingPage: React.FC<{ order: OrderGroup; onNavigate: (route
   order,
   onNavigate
 }) => {
+  const { openChatWithSeller } = useChat();
   return (
     <div style={{ padding: '3rem 0 6rem 0' }}>
       <div className="container" style={{ maxWidth: '800px' }}>
@@ -182,12 +185,28 @@ export const OrderTrackingPage: React.FC<{ order: OrderGroup; onNavigate: (route
           <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {order.sellerOrders.map((so) => (
               <div key={so.orderId} style={{ border: '1.5px solid #DECDBD', borderRadius: '12px', padding: '1.5rem', backgroundColor: '#FAF6F0' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid #DECDBD', paddingBottom: '0.5rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', borderBottom: '1px solid #DECDBD', paddingBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <div>
                     <h3 style={{ fontSize: '1.15rem', color: '#0C3C2C' }}>{so.farmName}</h3>
                     <span style={{ fontSize: '0.75rem', color: '#8A7B76' }}>Shipment Ref: {so.orderId}</span>
                   </div>
-                  <span className="badge badge-green">{so.status}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <button
+                      onClick={() => openChatWithSeller(so.farmId, {
+                        type: 'order',
+                        title: `Shipment Tracking: ${so.orderId} (${so.farmName})`,
+                        subtitle: `Status: ${so.status} • Est. Arrival: ${so.estimatedDeliveryDate}`,
+                        referenceId: so.orderId,
+                        disclaimer: 'Chat connects you with the farm for harvest & dispatch notes. For live driver location or claims, use Logistics Support.'
+                      })}
+                      className="btn btn-outline-warm btn-sm"
+                      style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', borderColor: '#0C3C2C', color: '#0C3C2C' }}
+                      aria-label={`Chat with seller: ${so.farmName}`}
+                    >
+                      <MessageSquare size={13} /> Chat with seller
+                    </button>
+                    <span className="badge badge-green">{so.status}</span>
+                  </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
@@ -288,6 +307,7 @@ export const IssueReportPage: React.FC<{ order: OrderGroup; onNavigate: (route: 
 
 // QUOTES & BIDS PAGE (For /buyer/quotes and /farmer/quotes)
 export const QuotesPage: React.FC<{ isFarmer?: boolean; onNavigate: (route: string) => void }> = ({ isFarmer = false, onNavigate }) => {
+  const { openChatWithSeller } = useChat();
   const [activeTab, setActiveTab] = useState<'all' | 'quoted' | 'accepted'>('all');
   const [responseNotice, setResponseNotice] = useState<string | null>(null);
 
@@ -343,7 +363,23 @@ export const QuotesPage: React.FC<{ isFarmer?: boolean; onNavigate: (route: stri
             <strong>Farmer Note:</strong> &ldquo;Can fulfill from our upcoming November 2 harvest. Price of ₱105/kg reflects dedicated refrigerated truck delivery to Biñan, Laguna with palletized mesh sacks.&rdquo;
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            {!isFarmer && (
+              <button
+                onClick={() => openChatWithSeller('farm-001', {
+                  type: 'quote',
+                  title: 'RFQ #QT-2026-041 (Red Onions Class A)',
+                  subtitle: 'Requested: 500 kg @ ₱105.00/kg (Offered Total: ₱52,500.00)',
+                  referenceId: 'QT-2026-041',
+                  disclaimer: 'Note: Discussing terms in chat does not automatically change an accepted quote or binding order. Use formal counter-offer/acceptance controls.'
+                })}
+                className="btn btn-outline-warm btn-sm"
+                style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', borderColor: '#0C3C2C', color: '#0C3C2C' }}
+                aria-label="Chat with seller: Santos Agri-Farms"
+              >
+                <MessageSquare size={14} /> Chat with seller
+              </button>
+            )}
             {isFarmer ? (
               <>
                 <button onClick={() => handleAction("Counter-offer price updated to ₱103.00/kg.")} className="btn btn-outline-warm btn-sm">

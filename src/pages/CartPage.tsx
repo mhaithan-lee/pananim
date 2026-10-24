@@ -8,8 +8,10 @@ import {
   MapPin, 
   ShieldCheck, 
   AlertCircle,
-  Sparkles
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface CartPageProps {
   cartItems: CartItem[];
@@ -26,6 +28,7 @@ export const CartPage: React.FC<CartPageProps> = ({
   onNavigate,
   onLoadWorkedExample
 }) => {
+  const { openChatWithSeller } = useChat();
   // Group cart items by farm
   const itemsByFarm = cartItems.reduce((acc, item) => {
     const farmId = item.crop.farmId;
@@ -152,9 +155,27 @@ export const CartPage: React.FC<CartPageProps> = ({
                           </span>
                         </div>
                       </div>
-                      <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>
-                        Separate Seller Shipment
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => openChatWithSeller(farmId, {
+                            type: 'cart',
+                            title: `Cart Sourcing Inquiry (${group.farmName})`,
+                            subtitle: `${group.items.length} item(s): ${group.items.map(i => `${i.crop.name} (${i.quantity}${i.crop.unit})`).join(', ')}`,
+                            imageUrl: group.items[0]?.crop.imageUrl,
+                            price: `₱${groupSubtotal.toLocaleString()}`,
+                            unit: 'seller items total',
+                            disclaimer: 'Context includes only items from this grower. Never discloses other growers in your cart.'
+                          })}
+                          className="btn btn-outline-warm btn-sm"
+                          style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem', borderColor: '#0C3C2C', color: '#0C3C2C' }}
+                          aria-label={`Chat with seller: ${group.farmName}`}
+                        >
+                          <MessageSquare size={14} /> Chat with seller
+                        </button>
+                        <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>
+                          Separate Seller Shipment
+                        </span>
+                      </div>
                     </div>
 
                     {/* Farm Items List */}

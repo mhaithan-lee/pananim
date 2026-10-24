@@ -11,8 +11,10 @@ import {
   ArrowLeft,
   ChevronRight,
   ShieldCheck,
-  Star
+  Star,
+  MessageSquare
 } from 'lucide-react';
+import { useChat } from '../context/ChatContext';
 
 interface FarmersPageProps {
   farms: Farm[];
@@ -147,6 +149,7 @@ export const FarmerStorefrontPage: React.FC<FarmerStorefrontPageProps> = ({
   onNavigate,
   onAddToCart
 }) => {
+  const { openChatWithSeller } = useChat();
   const farmListings = listings.filter(l => l.farmId === farm.id);
 
   return (
@@ -185,9 +188,20 @@ export const FarmerStorefrontPage: React.FC<FarmerStorefrontPageProps> = ({
               </div>
             </div>
 
-            <button onClick={() => onNavigate('/farmers')} className="btn btn-outline-warm btn-sm">
-              <ArrowLeft size={16} /> Back to Directory
-            </button>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => openChatWithSeller(farm.id)}
+                className="btn btn-outline-warm btn-sm"
+                style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, borderColor: '#0C3C2C', color: '#0C3C2C' }}
+                aria-label={`Chat with seller: ${farm.name}`}
+              >
+                <MessageSquare size={15} /> Chat with seller
+              </button>
+
+              <button onClick={() => onNavigate('/farmers')} className="btn btn-secondary btn-sm">
+                <ArrowLeft size={16} /> Directory
+              </button>
+            </div>
           </div>
 
           <p style={{ marginTop: '1.5rem', color: '#574A46', lineHeight: 1.7, fontSize: '0.95rem', maxWidth: '820px' }}>
