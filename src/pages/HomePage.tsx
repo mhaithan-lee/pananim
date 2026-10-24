@@ -45,12 +45,54 @@ export const HomePage: React.FC<HomePageProps> = ({
   const featuredFarms = farms.slice(0, 4);
 
   const categories = [
-    { name: 'Bulb Crops', icon: '🧅', count: '4 harvests', slug: 'Bulb+Crop', desc: 'Red Creole Onions, Native Garlic, Shallots' },
-    { name: 'Fruit Vegetables', icon: '🍅', count: '6 harvests', slug: 'Fruit+Vegetable', desc: 'Vine Tomatoes, Long Eggplants, Native Peppers' },
-    { name: 'Leafy Vegetables', icon: '🥬', count: '5 harvests', slug: 'Leafy+Vegetable', desc: 'Highland Cabbage, Pechay Baguio, Wombok' },
-    { name: 'Root Crops', icon: '🥕', count: '4 harvests', slug: 'Root+Crop', desc: 'Benguet Carrots, Native Ginger, White Potatoes' },
-    { name: 'Grains & Corn', icon: '🌽', count: '3 harvests', slug: 'Grains', desc: 'Sweet Yellow Corn, Feed Grains, Field Corn' },
-    { name: 'Gourds & Squash', icon: '🥒', count: '4 harvests', slug: 'Gourds', desc: 'Bittergourd (Ampalaya), Green Pipino, Sayote' }
+    { 
+      name: 'Bulb Crops', 
+      image: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=400&q=80',
+      fallbackImage: 'https://images.unsplash.com/photo-1580201092675-a0a6a6cafbb1?auto=format&fit=crop&w=400&q=80',
+      count: '4 harvests', 
+      slug: 'Bulb+Crop', 
+      desc: 'Red Creole Onions, Native Garlic, Shallots' 
+    },
+    { 
+      name: 'Fruit Vegetables', 
+      image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=400&q=80',
+      fallbackImage: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=400&q=80',
+      count: '6 harvests', 
+      slug: 'Fruit+Vegetable', 
+      desc: 'Vine Tomatoes, Long Eggplants, Native Peppers' 
+    },
+    { 
+      name: 'Leafy Vegetables', 
+      image: 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?auto=format&fit=crop&w=400&q=80',
+      fallbackImage: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?auto=format&fit=crop&w=400&q=80',
+      count: '5 harvests', 
+      slug: 'Leafy+Vegetable', 
+      desc: 'Highland Cabbage, Pechay Baguio, Wombok' 
+    },
+    { 
+      name: 'Root Crops', 
+      image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=400&q=80',
+      fallbackImage: 'https://images.unsplash.com/photo-1447175008436-054170c2e979?auto=format&fit=crop&w=400&q=80',
+      count: '4 harvests', 
+      slug: 'Root+Crop', 
+      desc: 'Benguet Carrots, Native Ginger, White Potatoes' 
+    },
+    { 
+      name: 'Grains & Corn', 
+      image: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=400&q=80',
+      fallbackImage: 'https://images.unsplash.com/photo-1543257580-7269da773bf5?auto=format&fit=crop&w=400&q=80',
+      count: '3 harvests', 
+      slug: 'Grains', 
+      desc: 'Sweet Yellow Corn, Feed Grains, Field Corn' 
+    },
+    { 
+      name: 'Gourds & Squash', 
+      image: 'https://images.unsplash.com/photo-1570586437263-ab629fccc818?auto=format&fit=crop&w=400&q=80',
+      fallbackImage: 'https://images.unsplash.com/photo-1590165482129-1b8b27698980?auto=format&fit=crop&w=400&q=80',
+      count: '4 harvests', 
+      slug: 'Gourds', 
+      desc: 'Bittergourd (Ampalaya), Green Pipino, Sayote' 
+    }
   ];
 
   const faqs = [
@@ -298,10 +340,33 @@ export const HomePage: React.FC<HomePageProps> = ({
                   backgroundColor: '#FFFFFF',
                   display: 'flex',
                   flexDirection: 'column',
-                  alignItems: 'center'
+                  alignItems: 'center',
+                  transition: 'transform 0.2s ease, box-shadow 0.2s ease'
                 }}
               >
-                <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>{cat.icon}</div>
+                {/* Real Produce Photography Badge instead of emoji */}
+                <div 
+                  style={{ 
+                    width: '76px', 
+                    height: '76px', 
+                    borderRadius: '50%', 
+                    overflow: 'hidden', 
+                    marginBottom: '0.85rem',
+                    border: '3px solid #E2ECE5',
+                    boxShadow: '0 4px 12px rgba(12, 60, 44, 0.1)',
+                    backgroundColor: '#F5EDE2',
+                    flexShrink: 0
+                  }}
+                >
+                  <img 
+                    src={cat.image} 
+                    alt={cat.name}
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = cat.fallbackImage;
+                    }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
                 <h4 style={{ fontSize: '1rem', color: '#0C3C2C', marginBottom: '0.25rem' }}>{cat.name}</h4>
                 <span style={{ fontSize: '0.75rem', color: '#8A7B76', fontWeight: 600 }}>{cat.count}</span>
                 <p style={{ fontSize: '0.75rem', marginTop: '0.5rem', color: '#574A46' }}>{cat.desc}</p>
@@ -373,7 +438,7 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
 
           <div className="data-table-container" style={{ backgroundColor: '#0C3C2C', borderColor: '#1D4B39' }}>
-            <table className="data-table" style={{ color: '#FFFFFF' }}>
+            <table className="data-table data-table-dark" style={{ color: '#FFFFFF' }}>
               <thead>
                 <tr style={{ backgroundColor: '#092F22' }}>
                   <th style={{ backgroundColor: '#092F22', color: '#D5E6DE' }}>Crop Item</th>
@@ -384,28 +449,44 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                <tr 
+                  style={{ transition: 'background-color 0.18s ease' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#13533E'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
                   <td style={{ color: '#FFFFFF', fontWeight: 600 }}>🧅 Red Onions</td>
                   <td style={{ color: '#A0B5AC' }}>Nueva Ecija (San Jose / Cabanatuan)</td>
                   <td style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '1.1rem' }}>₱120.00</td>
                   <td style={{ color: '#FF9E7D', fontWeight: 700 }}>+7.1%</td>
                   <td><span className="badge badge-terracotta">Trending Up</span></td>
                 </tr>
-                <tr>
+                <tr 
+                  style={{ transition: 'background-color 0.18s ease' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#13533E'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
                   <td style={{ color: '#FFFFFF', fontWeight: 600 }}>🍅 Cherry Tomatoes</td>
                   <td style={{ color: '#A0B5AC' }}>Laguna (San Pablo Valley)</td>
                   <td style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '1.1rem' }}>₱85.00</td>
                   <td style={{ color: '#A0B5AC' }}>0.0%</td>
                   <td><span className="badge badge-green">Stable</span></td>
                 </tr>
-                <tr>
+                <tr 
+                  style={{ transition: 'background-color 0.18s ease' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#13533E'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
                   <td style={{ color: '#FFFFFF', fontWeight: 600 }}>🥬 Highland Cabbage</td>
                   <td style={{ color: '#A0B5AC' }}>Benguet (La Trinidad Trading Post)</td>
                   <td style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '1.1rem' }}>₱60.00</td>
                   <td style={{ color: '#A0B5AC' }}>0.0%</td>
                   <td><span className="badge badge-green">Steady Supply</span></td>
                 </tr>
-                <tr>
+                <tr 
+                  style={{ transition: 'background-color 0.18s ease' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#13533E'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
                   <td style={{ color: '#FFFFFF', fontWeight: 600 }}>🌽 Sweet Yellow Corn</td>
                   <td style={{ color: '#A0B5AC' }}>Isabela (Cauayan Hub)</td>
                   <td style={{ color: '#FFFFFF', fontWeight: 700, fontSize: '1.1rem' }}>₱45.00</td>
@@ -431,11 +512,14 @@ export const HomePage: React.FC<HomePageProps> = ({
               borderColor: '#DECDBD'
             }}
           >
-            <div style={{ position: 'relative', minHeight: '320px' }}>
+            <div style={{ position: 'relative', minHeight: '340px' }}>
               <img 
-                src="https://images.unsplash.com/photo-1592982537447-6f2a6a0c5c1c?auto=format&fit=crop&w=800&q=80" 
-                alt="Benguet Terraces"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1200&q=80" 
+                alt="Benguet Highland Terraces Harvest"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=1200&q=80';
+                }}
+                style={{ width: '100%', height: '100%', minHeight: '340px', objectFit: 'cover' }}
               />
               <span 
                 style={{
@@ -822,20 +906,27 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div 
             className="card"
             style={{
-              padding: '3rem',
+              padding: '4.5rem 2.5rem',
+              backgroundImage: 'linear-gradient(135deg, rgba(12, 60, 44, 0.90) 0%, rgba(7, 39, 28, 0.88) 50%, rgba(12, 60, 44, 0.93) 100%), url(/images/hero-farmer-basket.png)',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center 35%',
               backgroundColor: '#0C3C2C',
               color: '#FFFFFF',
               borderRadius: '24px',
               textAlign: 'center',
               maxWidth: '960px',
-              margin: '0 auto'
+              margin: '0 auto',
+              border: '1px solid rgba(255, 255, 255, 0.18)',
+              boxShadow: '0 20px 45px rgba(12, 60, 44, 0.3)',
+              position: 'relative',
+              overflow: 'hidden'
             }}
           >
             <span className="badge badge-gold" style={{ marginBottom: '1rem' }}>Farmer Onboarding</span>
             <h2 style={{ color: '#FFFFFF', fontSize: '2.4rem', marginBottom: '1rem' }}>
               Bring Your Harvest Directly to Urban Buyers
             </h2>
-            <p style={{ color: '#D5E6DE', maxWidth: '680px', margin: '0 auto 2rem auto', fontSize: '1.05rem' }}>
+            <p style={{ color: '#D5E6DE', maxWidth: '680px', margin: '0 auto 2rem auto', fontSize: '1.05rem', lineHeight: 1.7 }}>
               Stop leaving your margins in the hands of middlemen. Pananim gives Filipino farmers and cooperatives access to verified commercial buyers, organized shared logistics, and prompt payment settlement.
             </p>
             <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>

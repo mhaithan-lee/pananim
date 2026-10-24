@@ -552,6 +552,34 @@ input:focus, select:focus, textarea:focus {
   background-color: var(--color-warm-sand-light);
 }
 
+/* Dark Data Table styling & high-contrast hover */
+.data-table.data-table-dark {
+  background-color: #0C3C2C;
+  color: #FFFFFF;
+}
+
+.data-table.data-table-dark th {
+  background-color: #07271C !important;
+  color: #D5E6DE !important;
+  border-bottom: 1px solid #1D4B39 !important;
+}
+
+.data-table.data-table-dark td {
+  border-bottom: 1px solid #164635 !important;
+  color: #FFFFFF;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.data-table.data-table-dark tr:hover td {
+  background-color: #13533E !important;
+  color: #FFFFFF !important;
+}
+
+.data-table.data-table-dark tr:hover td span:not(.badge),
+.data-table.data-table-dark tr:hover td strong {
+  color: #FFFFFF !important;
+}
+
 /* Modals */
 .modal-overlay {
   position: fixed;
