@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { CropListing, Farm } from '../types';
 import { CropCard } from '../components/CropCard';
+import { mockReviews } from '../data/mockData';
 import { 
   Search, 
   MapPin, 
@@ -38,6 +39,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
   const [heroPhoto, setHeroPhoto] = useState<'/images/hero-farmer-sunlit.png' | '/images/hero-farmer-basket.png'>('/images/hero-farmer-sunlit.png');
+  const [selectedReviewPhoto, setSelectedReviewPhoto] = useState<string | null>(null);
 
   const featuredCrops = cropListings.slice(0, 8);
   const featuredFarms = farms.slice(0, 4);
@@ -682,72 +684,134 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 13. BUYER REVIEWS PREVIEW (Section 4.13) */}
+      {/* 13. BUYER REVIEWS PREVIEW (Section 4.13) with Produce & Arrival Photos */}
       <section style={{ padding: '4.5rem 0', backgroundColor: '#F8F2EB' }}>
         <div className="container">
-          <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 3rem auto' }}>
-            <span className="badge badge-green" style={{ marginBottom: '0.5rem' }}>Verified Experience</span>
-            <h2>Authentic Wholesale Buyer Feedback</h2>
-            <p>Every review on Pananim is tied to a completed, delivered purchase order.</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+            <div>
+              <span className="badge badge-green" style={{ marginBottom: '0.5rem' }}>
+                <ShieldCheck size={12} /> Verified Purchase Evidence
+              </span>
+              <h2>Authentic Wholesale Buyer Feedback</h2>
+              <p>Every review on Pananim is tied to a completed order with verified intake scale receipts and arrival photos.</p>
+            </div>
+            <button
+              onClick={() => onNavigate('/buyer/reviews')}
+              className="btn btn-secondary btn-sm"
+            >
+              View All Verified Reviews &rarr;
+            </button>
           </div>
 
           <div 
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
               gap: '1.75rem'
             }}
           >
-            <div className="card" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#D48216', marginBottom: '0.75rem' }}>
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-              </div>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '0.5rem' }}>&ldquo;Superb curing, zero rot in 25kg sack&rdquo;</h4>
-              <p style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
-                Ordered 25kg for restaurant supply. Every bulb was rock hard, dry neck, clean roots. Delivered in sturdy red mesh sacks within 36 hours from Cabanatuan.
-              </p>
-              <div style={{ fontSize: '0.75rem', color: '#8A7B76' }}>
-                <strong>Mateo Rodriguez</strong> &bull; Verified Purchase: Red Onions 25kg
-              </div>
-            </div>
+            {mockReviews.map((rev) => (
+              <div 
+                key={rev.id} 
+                className="card card-hover" 
+                style={{ 
+                  padding: '1.75rem', 
+                  backgroundColor: '#FFFFFF',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  border: '1px solid #EADECF'
+                }}
+              >
+                {/* Header with Buyer Info & Stars */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+                      <strong style={{ color: '#0C3C2C', fontSize: '0.95rem' }}>{rev.buyerName}</strong>
+                      <span className="badge badge-green" style={{ fontSize: '0.625rem', padding: '0.15rem 0.45rem' }}>
+                        <CheckCircle size={10} /> Verified
+                      </span>
+                    </div>
+                    <span style={{ fontSize: '0.75rem', color: '#8A7B76' }}>
+                      {rev.cropName} &bull; {rev.date}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', color: '#D48216' }}>
+                    {Array.from({ length: rev.rating }).map((_, i) => (
+                      <Star key={i} size={14} fill="#D48216" />
+                    ))}
+                  </div>
+                </div>
 
-            <div className="card" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#D48216', marginBottom: '0.75rem' }}>
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-              </div>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '0.5rem' }}>&ldquo;Tight heads, minimal wrapper loss&rdquo;</h4>
-              <p style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
-                The cabbage from Benguet Highland Growers arrived crisp without bruising. Heavy heads around 1.8 to 2.2 kg each. Great profit margin for wholesale resale.
-              </p>
-              <div style={{ fontSize: '0.75rem', color: '#8A7B76' }}>
-                <strong>Teresita Ong</strong> &bull; Verified Purchase: Highland Cabbage 100kg
-              </div>
-            </div>
+                {/* Review Title & Comment */}
+                <h4 style={{ fontSize: '1.05rem', color: '#0C3C2C', marginBottom: '0.5rem', lineHeight: 1.3 }}>
+                  &ldquo;{rev.title}&rdquo;
+                </h4>
+                <p style={{ fontSize: '0.875rem', color: '#574A46', lineHeight: 1.6, marginBottom: '1rem', flex: 1 }}>
+                  {rev.comment}
+                </p>
 
-            <div className="card" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#D48216', marginBottom: '0.75rem' }}>
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
-                <Star size={16} fill="#D48216" />
+                {/* Attached Inspection Photos (At least 2 per review) */}
+                {rev.images && rev.images.length > 0 && (
+                  <div style={{ marginBottom: '1rem' }}>
+                    <span style={{ fontSize: '0.7rem', fontWeight: 700, color: '#8A7B76', textTransform: 'uppercase', display: 'block', marginBottom: '0.4rem', letterSpacing: '0.04em' }}>
+                      📸 Arrival Photos ({rev.images.length}):
+                    </span>
+                    <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                      {rev.images.map((img, i) => (
+                        <div 
+                          key={i}
+                          style={{
+                            width: '84px',
+                            height: '84px',
+                            borderRadius: '8px',
+                            overflow: 'hidden',
+                            border: '1.5px solid #DECDBD',
+                            cursor: 'pointer',
+                            position: 'relative'
+                          }}
+                          onClick={() => setSelectedReviewPhoto(img)}
+                          title="Click to view full photo"
+                        >
+                          <img 
+                            src={img} 
+                            alt={`Review photo ${i + 1}`}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?auto=format&fit=crop&w=600&q=80';
+                            }}
+                          />
+                          <span 
+                            style={{
+                              position: 'absolute',
+                              bottom: '3px',
+                              right: '3px',
+                              backgroundColor: 'rgba(12,60,44,0.85)',
+                              color: '#fff',
+                              fontSize: '0.575rem',
+                              padding: '1px 4px',
+                              borderRadius: '3px',
+                              fontWeight: 700
+                            }}
+                          >
+                            #{i + 1}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Farmer Reply Snippet */}
+                {rev.farmerReply && (
+                  <div style={{ backgroundColor: '#FAF6F0', borderRadius: '6px', padding: '0.65rem 0.85rem', borderLeft: '3px solid #0C3C2C', fontSize: '0.775rem', color: '#574A46' }}>
+                    <strong style={{ color: '#0C3C2C', display: 'block', marginBottom: '0.15rem' }}>
+                      🌾 {rev.farmerReply.farmerName}:
+                    </strong>
+                    &ldquo;{rev.farmerReply.message}&rdquo;
+                  </div>
+                )}
               </div>
-              <h4 style={{ fontSize: '1.05rem', marginBottom: '0.5rem' }}>&ldquo;Exceptional sweetness and high brix&rdquo;</h4>
-              <p style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
-                Very sweet tomatoes for salad service. Only 3 cracked pieces in entire 10kg crate due to bumpy transit, which is well within normal tolerance.
-              </p>
-              <div style={{ fontSize: '0.75rem', color: '#8A7B76' }}>
-                <strong>Chef Carlo Manalo</strong> &bull; Verified Purchase: Cherry Tomatoes 10kg
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -832,6 +896,32 @@ export const HomePage: React.FC<HomePageProps> = ({
           </div>
         </div>
       </section>
+      {/* Lightbox for review photos */}
+      {selectedReviewPhoto && (
+        <div 
+          className="modal-overlay" 
+          onClick={() => setSelectedReviewPhoto(null)}
+          style={{ zIndex: 10000 }}
+        >
+          <div 
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: '680px', padding: '1.5rem', backgroundColor: '#FFFFFF', textAlign: 'center' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+              <strong style={{ color: '#0C3C2C' }}>Verified Purchase Produce Photo</strong>
+              <button onClick={() => setSelectedReviewPhoto(null)} className="btn btn-outline-warm btn-sm">
+                Close ✕
+              </button>
+            </div>
+            <img 
+              src={selectedReviewPhoto} 
+              alt="Full review photo" 
+              style={{ width: '100%', maxHeight: '70vh', objectFit: 'contain', borderRadius: '8px' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
