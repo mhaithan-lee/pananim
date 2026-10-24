@@ -59,57 +59,47 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const popularTags = [
-    { label: 'Highland Tomatoes', query: 'Tomatoes' },
-    { label: 'Red Creole Onions', query: 'Red Creole Onions' },
-    { label: 'Benguet Cabbage', query: 'Cabbage' },
-    { label: 'Sweet Corn', query: 'Sweet Corn' },
-    { label: 'Organic Carrots', query: 'Carrots' },
-    { label: 'Native Eggplants', query: 'Eggplant' },
-    { label: 'Verified Farms', path: '/farmers' }
-  ];
-
   const cropCategories = [
     {
       id: 'all',
       name: 'All Farm Harvests',
       sublabel: '30+ fresh commercial listings',
-      imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=300&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80',
       path: '/shop'
     },
     {
       id: 'bulb',
       name: 'Bulb Crops',
       sublabel: 'Red Creole Onions, Garlic, Shallots',
-      imageUrl: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=300&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=400&q=80',
       path: '/shop?category=Bulb+Crop'
     },
     {
       id: 'fruit',
       name: 'Fruit Vegetables',
       sublabel: 'Highland Tomatoes, Eggplants, Peppers',
-      imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=300&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=400&q=80',
       path: '/shop?category=Fruit+Vegetable'
     },
     {
       id: 'leafy',
       name: 'Leafy Vegetables',
       sublabel: 'Highland Cabbage, Pechay Baguio, Lettuce',
-      imageUrl: 'https://images.unsplash.com/photo-1550142414-a9e97a442a71?auto=format&fit=crop&w=300&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1594282486552-05b4d80fbb9f?auto=format&fit=crop&w=400&q=80',
       path: '/shop?category=Leafy+Vegetable'
     },
     {
       id: 'root',
       name: 'Root Crops',
       sublabel: 'Carrots, Benguet White Potato, Ginger',
-      imageUrl: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=300&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=400&q=80',
       path: '/shop?category=Root+Crop'
     },
     {
       id: 'grains',
       name: 'Grains & Corn',
       sublabel: 'Sweet Corn, Yellow Field Corn, Grains',
-      imageUrl: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=300&q=80',
+      imageUrl: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=400&q=80',
       path: '/shop?category=Grains'
     }
   ];
@@ -478,7 +468,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           ========================================================================= */}
       <div 
         style={{
-          padding: '0.85rem 0 0.75rem 0'
+          padding: '0.85rem 0'
         }}
       >
         <div 
@@ -498,13 +488,13 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Logo size="md" variant="white" showTagline={true} />
           </div>
 
-          {/* Central Wide Search Bar + Popular Keywords (Shopee format) */}
+          {/* Central Wide Search Bar (Directly Aligned with Cart) */}
           <div 
             style={{
               flex: 1,
               maxWidth: '820px',
               display: 'flex',
-              flexDirection: 'column'
+              alignItems: 'center'
             }}
             className="header-search-container"
           >
@@ -515,10 +505,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 backgroundColor: '#FFFFFF',
-                borderRadius: '6px',
-                padding: '3px',
+                borderRadius: '8px',
+                padding: '3px 3px 3px 1rem',
                 boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                width: '100%'
+                width: '100%',
+                height: '44px',
+                boxSizing: 'border-box'
               }}
             >
               <input
@@ -530,7 +522,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   flex: 1,
                   border: 'none',
                   outline: 'none',
-                  padding: '0.55rem 0.85rem',
+                  padding: '0 0.5rem',
                   fontSize: '0.9rem',
                   color: '#221714',
                   backgroundColor: 'transparent'
@@ -542,7 +534,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   backgroundColor: '#9B3C1B',
                   color: '#FFFFFF',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   width: '56px',
                   height: '38px',
                   display: 'flex',
@@ -559,51 +551,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <Search size={18} />
               </button>
             </form>
-
-            {/* Quick Popular Keywords below search input (Shopee style) */}
-            <div 
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.85rem',
-                marginTop: '0.35rem',
-                overflowX: 'auto',
-                whiteSpace: 'nowrap'
-              }}
-              className="quick-search-tags"
-            >
-              {popularTags.map((tag, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => {
-                    if (tag.path) {
-                      onNavigate(tag.path);
-                    } else {
-                      setSearchQuery(tag.query || tag.label);
-                      onNavigate(`/shop?q=${encodeURIComponent(tag.query || tag.label)}`);
-                    }
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#D5E6DE',
-                    fontSize: '0.725rem',
-                    padding: 0,
-                    cursor: 'pointer',
-                    opacity: 0.85,
-                    transition: 'opacity 0.15s ease'
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.85')}
-                >
-                  {tag.label}
-                </button>
-              ))}
-            </div>
           </div>
 
-          {/* Right Action: Prominent Shopping Cart (Shopee style) */}
+          {/* Right Action: Prominent Shopping Cart (Aligned with Search Bar) */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
             <button
               onClick={() => onNavigate('/cart')}
@@ -611,14 +561,16 @@ export const Navbar: React.FC<NavbarProps> = ({
                 position: 'relative',
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
-                padding: '0.55rem 1rem',
+                gap: '0.55rem',
+                padding: '0 1.25rem',
+                height: '44px',
                 backgroundColor: 'rgba(255, 255, 255, 0.12)',
                 border: '1.5px solid rgba(255, 255, 255, 0.25)',
                 borderRadius: '8px',
                 color: '#FFFFFF',
                 cursor: 'pointer',
-                transition: 'background-color 0.15s ease'
+                transition: 'background-color 0.15s ease',
+                boxSizing: 'border-box'
               }}
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)')}
@@ -863,6 +815,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <img
                         src={cat.imageUrl}
                         alt={cat.name}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&q=80';
+                        }}
                         style={{
                           width: '54px',
                           height: '54px',
@@ -1235,9 +1190,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
           .mobile-menu-btn {
             display: block !important;
-          }
-          .quick-search-tags {
-            display: none !important;
           }
           .hide-on-mobile {
             display: none !important;
