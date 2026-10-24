@@ -670,22 +670,53 @@ export const HomePage: React.FC<HomePageProps> = ({
               { step: '04', title: 'Manual Dispatch Updates', desc: 'Follow timestamped packing and dispatch notes directly updated by farmers and drivers.' },
               { step: '05', title: 'Intake Sign-off & Review', desc: 'Inspect scales and produce upon arrival, release settlement, and leave verified feedback.' }
             ].map((st, i) => (
-              <div key={i} className="card" style={{ padding: '1.75rem', position: 'relative' }}>
+              <div 
+                key={i} 
+                className="card" 
+                style={{ 
+                  padding: '1.75rem', 
+                  position: 'relative', 
+                  overflow: 'hidden',
+                  backgroundColor: '#FFFFFF',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  border: '1px solid #EADECF'
+                }}
+              >
+                {/* Number Watermark placed BEHIND the words (zIndex: 0) */}
                 <span 
                   style={{
                     fontFamily: 'var(--font-headings)',
-                    fontSize: '2.5rem',
-                    fontWeight: 800,
-                    color: '#E2ECE5',
+                    fontSize: '4.8rem',
+                    fontWeight: 900,
+                    color: '#2B785E',
+                    opacity: 0.13,
                     position: 'absolute',
-                    top: '12px',
-                    right: '16px'
+                    top: '-10px',
+                    right: '6px',
+                    lineHeight: 1,
+                    zIndex: 0,
+                    pointerEvents: 'none',
+                    userSelect: 'none'
                   }}
+                  aria-hidden="true"
                 >
                   {st.step}
                 </span>
-                <h4 style={{ fontSize: '1.05rem', color: '#0C3C2C', marginBottom: '0.5rem', marginTop: '1rem' }}>{st.title}</h4>
-                <p style={{ fontSize: '0.875rem' }}>{st.desc}</p>
+
+                {/* Words placed in FRONT of the number (zIndex: 1) for crystal-clear readability */}
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#D48216', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', marginBottom: '0.4rem' }}>
+                    Step {st.step}
+                  </span>
+                  <h4 style={{ fontSize: '1.1rem', color: '#0C3C2C', marginBottom: '0.65rem', fontWeight: 700, lineHeight: 1.35 }}>
+                    {st.title}
+                  </h4>
+                  <p style={{ fontSize: '0.875rem', color: '#574A46', lineHeight: 1.6, margin: 0 }}>
+                    {st.desc}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -806,24 +837,38 @@ export const HomePage: React.FC<HomePageProps> = ({
                   border: '1px solid #EADECF'
                 }}
               >
-                {/* Header with Buyer Info & Stars */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
-                      <strong style={{ color: '#0C3C2C', fontSize: '0.95rem' }}>{rev.buyerName}</strong>
-                      <span className="badge badge-green" style={{ fontSize: '0.625rem', padding: '0.15rem 0.45rem' }}>
-                        <CheckCircle size={10} /> Verified
-                      </span>
-                    </div>
-                    <span style={{ fontSize: '0.75rem', color: '#8A7B76' }}>
+                {/* Header with Buyer Info, Verified Badge on top right, and Stars placed below the date */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.9rem' }}>
+                  <div style={{ flex: 1, paddingRight: '0.75rem' }}>
+                    <strong style={{ color: '#0C3C2C', fontSize: '1.05rem', display: 'block', marginBottom: '0.2rem', lineHeight: 1.3 }}>
+                      {rev.buyerName}
+                    </strong>
+                    <span style={{ fontSize: '0.775rem', color: '#8A7B76', display: 'block' }}>
                       {rev.cropName} &bull; {rev.date}
                     </span>
+                    {/* Stars placed below the date */}
+                    <div style={{ display: 'flex', color: '#D48216', marginTop: '0.35rem', gap: '3px' }}>
+                      {Array.from({ length: rev.rating }).map((_, i) => (
+                        <Star key={i} size={15} fill="#D48216" />
+                      ))}
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', color: '#D48216' }}>
-                    {Array.from({ length: rev.rating }).map((_, i) => (
-                      <Star key={i} size={14} fill="#D48216" />
-                    ))}
-                  </div>
+
+                  {/* Verified badge replaced on the stars position (top right) */}
+                  <span 
+                    className="badge badge-green" 
+                    style={{ 
+                      fontSize: '0.7rem', 
+                      padding: '0.25rem 0.6rem', 
+                      display: 'inline-flex', 
+                      alignItems: 'center', 
+                      gap: '0.3rem',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0
+                    }}
+                  >
+                    <CheckCircle size={11} /> Verified
+                  </span>
                 </div>
 
                 {/* Review Title & Comment */}
@@ -907,42 +952,73 @@ export const HomePage: React.FC<HomePageProps> = ({
             className="card"
             style={{
               padding: '4.5rem 2.5rem',
-              backgroundImage: 'linear-gradient(135deg, rgba(12, 60, 44, 0.90) 0%, rgba(7, 39, 28, 0.88) 50%, rgba(12, 60, 44, 0.93) 100%), url(/images/hero-farmer-basket.png)',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center 35%',
-              backgroundColor: '#0C3C2C',
-              color: '#FFFFFF',
+              position: 'relative',
               borderRadius: '24px',
+              overflow: 'hidden',
               textAlign: 'center',
               maxWidth: '960px',
               margin: '0 auto',
-              border: '1px solid rgba(255, 255, 255, 0.18)',
+              backgroundColor: '#0C3C2C',
               boxShadow: '0 20px 45px rgba(12, 60, 44, 0.3)',
-              position: 'relative',
-              overflow: 'hidden'
+              border: '1px solid rgba(255, 255, 255, 0.2)'
             }}
           >
-            <span className="badge badge-gold" style={{ marginBottom: '1rem' }}>Farmer Onboarding</span>
-            <h2 style={{ color: '#FFFFFF', fontSize: '2.4rem', marginBottom: '1rem' }}>
-              Bring Your Harvest Directly to Urban Buyers
-            </h2>
-            <p style={{ color: '#D5E6DE', maxWidth: '680px', margin: '0 auto 2rem auto', fontSize: '1.05rem', lineHeight: 1.7 }}>
-              Stop leaving your margins in the hands of middlemen. Pananim gives Filipino farmers and cooperatives access to verified commercial buyers, organized shared logistics, and prompt payment settlement.
-            </p>
-            <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-              <button 
-                onClick={() => onNavigate('/register/farmer')}
-                className="btn btn-accent btn-lg"
-              >
-                Register as a Farmer / Cooperative
-              </button>
-              <button 
-                onClick={() => onNavigate('/sell-with-pananim')}
-                className="btn btn-outline-warm btn-lg"
-                style={{ backgroundColor: 'transparent', color: '#FFFFFF', borderColor: '#FFFFFF' }}
-              >
-                Learn About Verification
-              </button>
+            {/* Authentic Picture of Farmer in the field */}
+            <img 
+              src="/images/hero-farmer-basket.png" 
+              alt="Filipino Farmer" 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center 35%',
+                zIndex: 0
+              }}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = 'https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=1400&q=80';
+              }}
+            />
+            {/* Balanced Dark Green Overlay so farmer is clearly seen while text is 100% readable */}
+            <div 
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(135deg, rgba(12, 60, 44, 0.65) 0%, rgba(7, 39, 28, 0.75) 100%)',
+                zIndex: 1
+              }}
+            />
+
+            {/* Content in front */}
+            <div style={{ position: 'relative', zIndex: 2 }}>
+              <span className="badge badge-gold" style={{ marginBottom: '1rem' }}>Farmer Onboarding</span>
+              <h2 style={{ color: '#FFFFFF', fontSize: '2.4rem', marginBottom: '1rem', textShadow: '0 2px 10px rgba(0,0,0,0.7)' }}>
+                Bring Your Harvest Directly to Urban Buyers
+              </h2>
+              <p style={{ color: '#F5EDE2', maxWidth: '680px', margin: '0 auto 2rem auto', fontSize: '1.05rem', lineHeight: 1.7, textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}>
+                Stop leaving your margins in the hands of middlemen. Pananim gives Filipino farmers and cooperatives access to verified commercial buyers, organized shared logistics, and prompt payment settlement.
+              </p>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+                <button 
+                  onClick={() => onNavigate('/register/farmer')}
+                  className="btn btn-accent btn-lg"
+                  style={{ boxShadow: '0 4px 14px rgba(0,0,0,0.3)' }}
+                >
+                  Register as a Farmer / Cooperative
+                </button>
+                <button 
+                  onClick={() => onNavigate('/sell-with-pananim')}
+                  className="btn btn-outline-warm btn-lg"
+                  style={{ backgroundColor: 'rgba(12, 60, 44, 0.45)', color: '#FFFFFF', borderColor: '#FFFFFF', backdropFilter: 'blur(4px)' }}
+                >
+                  Learn About Verification
+                </button>
+              </div>
             </div>
           </div>
         </div>
