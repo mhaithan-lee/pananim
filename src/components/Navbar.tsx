@@ -109,7 +109,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             style={{
               display: 'none',
               alignItems: 'center',
-              gap: '2rem'
+              gap: '1.75rem',
+              height: '74px'
             }}
             className="desktop-nav"
           >
@@ -119,33 +120,72 @@ export const Navbar: React.FC<NavbarProps> = ({
                 fontFamily: 'var(--font-headings)',
                 fontWeight: isActive('/') ? 800 : 600,
                 color: isActive('/') ? '#0C3C2C' : '#574A46',
-                borderBottom: isActive('/') ? '3px solid #0C3C2C' : '3px solid transparent',
-                padding: '0.5rem 0.2rem',
-                fontSize: '0.9rem',
-                letterSpacing: '0.04em'
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 0.2rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                whiteSpace: 'nowrap',
+                position: 'relative',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
               }}
             >
               HOME
+              {isActive('/') && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    backgroundColor: '#0C3C2C',
+                    borderRadius: '3px 3px 0 0'
+                  }}
+                />
+              )}
             </button>
 
             {/* CROPS dropdown */}
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
               <button
                 onClick={() => setCropsDropdownOpen(!cropsDropdownOpen)}
                 style={{
                   fontFamily: 'var(--font-headings)',
                   fontWeight: currentRoute.startsWith('/shop') ? 800 : 600,
                   color: currentRoute.startsWith('/shop') ? '#0C3C2C' : '#574A46',
-                  display: 'flex',
+                  height: '100%',
+                  display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.3rem',
-                  borderBottom: currentRoute.startsWith('/shop') ? '3px solid #0C3C2C' : '3px solid transparent',
-                  padding: '0.5rem 0.2rem',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.04em'
+                  padding: '0 0.2rem',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.04em',
+                  whiteSpace: 'nowrap',
+                  position: 'relative',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
                 }}
               >
                 CROPS <ChevronDown size={14} />
+                {currentRoute.startsWith('/shop') && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '3px',
+                      backgroundColor: '#0C3C2C',
+                      borderRadius: '3px 3px 0 0'
+                    }}
+                  />
+                )}
               </button>
 
               {cropsDropdownOpen && (
@@ -219,13 +259,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                 fontFamily: 'var(--font-headings)',
                 fontWeight: isActive('/market-prices') ? 800 : 600,
                 color: isActive('/market-prices') ? '#0C3C2C' : '#574A46',
-                borderBottom: isActive('/market-prices') ? '3px solid #0C3C2C' : '3px solid transparent',
-                padding: '0.5rem 0.2rem',
-                fontSize: '0.9rem',
-                letterSpacing: '0.04em'
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 0.2rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                whiteSpace: 'nowrap',
+                position: 'relative',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
               }}
             >
               MARKET PRICES
+              {isActive('/market-prices') && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    backgroundColor: '#0C3C2C',
+                    borderRadius: '3px 3px 0 0'
+                  }}
+                />
+              )}
             </button>
 
             <button
@@ -234,13 +295,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                 fontFamily: 'var(--font-headings)',
                 fontWeight: isActive('/farmers') ? 800 : 600,
                 color: isActive('/farmers') ? '#0C3C2C' : '#574A46',
-                borderBottom: isActive('/farmers') ? '3px solid #0C3C2C' : '3px solid transparent',
-                padding: '0.5rem 0.2rem',
-                fontSize: '0.9rem',
-                letterSpacing: '0.04em'
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 0.2rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                whiteSpace: 'nowrap',
+                position: 'relative',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
               }}
             >
               FARMERS
+              {isActive('/farmers') && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    backgroundColor: '#0C3C2C',
+                    borderRadius: '3px 3px 0 0'
+                  }}
+                />
+              )}
             </button>
 
             <button
@@ -249,13 +331,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                 fontFamily: 'var(--font-headings)',
                 fontWeight: isActive('/about') ? 800 : 600,
                 color: isActive('/about') ? '#0C3C2C' : '#574A46',
-                borderBottom: isActive('/about') ? '3px solid #0C3C2C' : '3px solid transparent',
-                padding: '0.5rem 0.2rem',
-                fontSize: '0.9rem',
-                letterSpacing: '0.04em'
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '0 0.2rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                whiteSpace: 'nowrap',
+                position: 'relative',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
               }}
             >
               ABOUT US
+              {isActive('/about') && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    backgroundColor: '#0C3C2C',
+                    borderRadius: '3px 3px 0 0'
+                  }}
+                />
+              )}
             </button>
 
             {currentRole === 'farmer' ? (
@@ -265,8 +368,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                   fontFamily: 'var(--font-headings)',
                   fontWeight: 700,
                   color: '#9B3C1B',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.04em'
+                  height: '100%',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 0.2rem',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.04em',
+                  whiteSpace: 'nowrap',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
                 }}
               >
                 FARMER WORKSPACE
@@ -278,8 +390,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                   fontFamily: 'var(--font-headings)',
                   fontWeight: 700,
                   color: '#9B3C1B',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.04em'
+                  height: '100%',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 0.2rem',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.04em',
+                  whiteSpace: 'nowrap',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
                 }}
               >
                 MY ORDERS
@@ -291,17 +412,48 @@ export const Navbar: React.FC<NavbarProps> = ({
                   fontFamily: 'var(--font-headings)',
                   fontWeight: 700,
                   color: '#0C3C2C',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.04em'
+                  height: '100%',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '0 0.2rem',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.04em',
+                  whiteSpace: 'nowrap',
+                  position: 'relative',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
                 }}
               >
                 SELL WITH PANANIM
+                {isActive('/sell-with-pananim') && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '3px',
+                      backgroundColor: '#0C3C2C',
+                      borderRadius: '3px 3px 0 0'
+                    }}
+                  />
+                )}
               </button>
             )}
           </nav>
 
-          {/* Right Header Controls (Search, Cart, Bell, User Pill) */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+          {/* Right Header Controls (Search, Cart, Messages, Bell, User Pill) */}
+          <div 
+            className="right-controls"
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: '0.65rem',
+              flexShrink: 0
+            }}
+          >
             {/* Search Icon */}
             <button
               onClick={() => onNavigate('/shop')}
@@ -314,11 +466,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#0C3C2C'
+                color: '#0C3C2C',
+                flexShrink: 0,
+                cursor: 'pointer'
               }}
               aria-label="Search crops"
             >
-              <Search size={18} />
+              <Search size={17} />
             </button>
 
             {/* Cart Icon with Live Count */}
@@ -334,11 +488,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#FFFFFF',
-                position: 'relative'
+                position: 'relative',
+                flexShrink: 0,
+                cursor: 'pointer'
               }}
               aria-label="View shopping cart"
             >
-              <ShoppingCart size={18} />
+              <ShoppingCart size={17} />
               {cartCount > 0 && (
                 <span
                   style={{
@@ -347,7 +503,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     right: '-4px',
                     backgroundColor: '#D48216',
                     color: '#FFFFFF',
-                    fontSize: '0.7rem',
+                    fontSize: '0.65rem',
                     fontWeight: 800,
                     width: '18px',
                     height: '18px',
@@ -376,12 +532,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#0C3C2C',
-                position: 'relative'
+                position: 'relative',
+                flexShrink: 0,
+                cursor: 'pointer'
               }}
               aria-label={currentUnreadMessages > 0 ? `${currentUnreadMessages} unread messages` : "Messages inbox"}
               title="Messages Inbox"
             >
-              <MessageSquare size={18} />
+              <MessageSquare size={17} />
               {currentUnreadMessages > 0 && (
                 <span
                   style={{
@@ -390,7 +548,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     right: '-4px',
                     backgroundColor: '#9B3C1B',
                     color: '#FFFFFF',
-                    fontSize: '0.675rem',
+                    fontSize: '0.65rem',
                     fontWeight: 800,
                     width: '18px',
                     height: '18px',
@@ -420,20 +578,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#574A46',
-                  position: 'relative'
+                  color: '#0C3C2C',
+                  position: 'relative',
+                  flexShrink: 0,
+                  cursor: 'pointer'
                 }}
                 aria-label="Notifications"
               >
-                <Bell size={18} />
+                <Bell size={17} />
                 {unreadNotificationsCount > 0 && (
                   <span
                     style={{
                       position: 'absolute',
                       top: '7px',
                       right: '8px',
-                      width: '8px',
-                      height: '8px',
+                      width: '7px',
+                      height: '7px',
                       borderRadius: '50%',
                       backgroundColor: '#9B3C1B'
                     }}
@@ -442,7 +602,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* User Profile Pill matching Screenshot 215453 */}
+            {/* User Profile Pill */}
             {currentUser ? (
               <div style={{ position: 'relative' }}>
                 <div
@@ -450,33 +610,35 @@ export const Navbar: React.FC<NavbarProps> = ({
                   style={{
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '0.6rem',
-                    padding: '0.3rem 0.6rem 0.3rem 0.4rem',
+                    gap: '0.55rem',
+                    padding: '0 0.75rem 0 0.35rem',
+                    height: '38px',
                     borderRadius: '9999px',
                     backgroundColor: '#FFFFFF',
                     border: '1.5px solid #DECDBD',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    boxSizing: 'border-box'
                   }}
                 >
                   <img
                     src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80'}
                     alt={currentUser.name}
                     style={{
-                      width: '32px',
-                      height: '32px',
+                      width: '28px',
+                      height: '28px',
                       borderRadius: '50%',
                       objectFit: 'cover'
                     }}
                   />
                   <div style={{ textAlign: 'left' }} className="user-text">
-                    <div style={{ fontSize: '0.825rem', fontWeight: 700, color: '#0C3C2C', lineHeight: 1.1 }}>
+                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0C3C2C', lineHeight: 1.15, whiteSpace: 'nowrap' }}>
                       {currentUser.name}
                     </div>
-                    <div style={{ fontSize: '0.675rem', color: '#8A7B76', textTransform: 'capitalize' }}>
+                    <div style={{ fontSize: '0.65rem', color: '#8A7B76', textTransform: 'capitalize', lineHeight: 1.1, whiteSpace: 'nowrap' }}>
                       {currentRole === 'farmer' ? 'Farm Owner' : currentRole === 'staff' ? 'Staff Reviewer' : 'Wholesale Buyer'}
                     </div>
                   </div>
-                  <ChevronDown size={14} style={{ color: '#574A46' }} />
+                  <ChevronDown size={13} style={{ color: '#574A46', marginLeft: '0.1rem' }} />
                 </div>
 
                 {userDropdownOpen && (
@@ -701,6 +863,26 @@ export const Navbar: React.FC<NavbarProps> = ({
           }
           .user-text {
             display: block !important;
+          }
+        }
+        @media (max-width: 1220px) {
+          .desktop-nav {
+            gap: 1.1rem !important;
+          }
+          .desktop-nav button {
+            font-size: 0.8rem !important;
+            padding: 0 0.15rem !important;
+          }
+          .right-controls {
+            gap: 0.45rem !important;
+          }
+        }
+        @media (max-width: 1040px) {
+          .desktop-nav {
+            gap: 0.75rem !important;
+          }
+          .desktop-nav button {
+            font-size: 0.76rem !important;
           }
         }
       `}</style>
