@@ -69,6 +69,51 @@ export const Navbar: React.FC<NavbarProps> = ({
     { label: 'Verified Farms', path: '/farmers' }
   ];
 
+  const cropCategories = [
+    {
+      id: 'all',
+      name: 'All Farm Harvests',
+      sublabel: '30+ fresh commercial listings',
+      imageUrl: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=300&q=80',
+      path: '/shop'
+    },
+    {
+      id: 'bulb',
+      name: 'Bulb Crops',
+      sublabel: 'Red Creole Onions, Garlic, Shallots',
+      imageUrl: 'https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&w=300&q=80',
+      path: '/shop?category=Bulb+Crop'
+    },
+    {
+      id: 'fruit',
+      name: 'Fruit Vegetables',
+      sublabel: 'Highland Tomatoes, Eggplants, Peppers',
+      imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&w=300&q=80',
+      path: '/shop?category=Fruit+Vegetable'
+    },
+    {
+      id: 'leafy',
+      name: 'Leafy Vegetables',
+      sublabel: 'Highland Cabbage, Pechay Baguio, Lettuce',
+      imageUrl: 'https://images.unsplash.com/photo-1550142414-a9e97a442a71?auto=format&fit=crop&w=300&q=80',
+      path: '/shop?category=Leafy+Vegetable'
+    },
+    {
+      id: 'root',
+      name: 'Root Crops',
+      sublabel: 'Carrots, Benguet White Potato, Ginger',
+      imageUrl: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?auto=format&fit=crop&w=300&q=80',
+      path: '/shop?category=Root+Crop'
+    },
+    {
+      id: 'grains',
+      name: 'Grains & Corn',
+      sublabel: 'Sweet Corn, Yellow Field Corn, Grains',
+      imageUrl: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?auto=format&fit=crop&w=300&q=80',
+      path: '/shop?category=Grains'
+    }
+  ];
+
   return (
     <header 
       style={{
@@ -636,7 +681,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       <nav 
         style={{
           backgroundColor: '#07271C',
-          borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+          position: 'relative',
+          zIndex: 40,
+          overflow: 'visible'
         }}
         className="desktop-nav-bar"
       >
@@ -648,8 +696,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             justifyContent: 'flex-start',
             gap: '2.5rem',
             height: '42px',
-            overflowX: 'auto',
-            whiteSpace: 'nowrap'
+            position: 'relative',
+            overflow: 'visible'
           }}
         >
           {/* HOME */}
@@ -687,7 +735,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             )}
           </button>
 
-          {/* ALL CROPS DROPDOWN */}
+          {/* ALL CROPS DROPDOWN / POPOUT BOX */}
           <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
             <button
               onClick={() => setCropsDropdownOpen(!cropsDropdownOpen)}
@@ -708,7 +756,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 position: 'relative'
               }}
             >
-              ALL CROPS <ChevronDown size={13} />
+              ALL CROPS <ChevronDown size={13} style={{ transform: cropsDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }} />
               {currentRoute.startsWith('/shop') && (
                 <span
                   style={{
@@ -724,68 +772,140 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
 
+            {/* Popout Box with Crop Pictures on the Left & Labels on the Right */}
             {cropsDropdownOpen && (
               <div
                 style={{
                   position: 'absolute',
-                  top: '100%',
+                  top: 'calc(100% + 6px)',
                   left: 0,
-                  width: '230px',
+                  width: '580px',
                   backgroundColor: '#FFFFFF',
-                  borderRadius: '10px',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
-                  border: '1px solid #DECDBD',
-                  padding: '0.5rem',
-                  zIndex: 100,
-                  color: '#221714'
+                  borderRadius: '14px',
+                  boxShadow: '0 20px 48px rgba(0,0,0,0.32), 0 4px 12px rgba(0,0,0,0.12)',
+                  border: '1.5px solid #DECDBD',
+                  padding: '1.15rem',
+                  zIndex: 99999,
+                  color: '#221714',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '0.85rem'
                 }}
                 onMouseLeave={() => setCropsDropdownOpen(false)}
               >
-                <button
-                  onClick={() => { onNavigate('/shop'); setCropsDropdownOpen(false); }}
-                  style={{
-                    width: '100%',
-                    textAlign: 'left',
-                    padding: '0.6rem 0.8rem',
-                    borderRadius: '6px',
-                    fontSize: '0.85rem',
-                    fontWeight: 700,
-                    color: '#0C3C2C',
-                    display: 'block'
+                {/* Popout Box Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1.5px solid #F0E8DD', paddingBottom: '0.65rem' }}>
+                  <div>
+                    <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#9B3C1B', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+                      Farm-Direct Wholesale
+                    </span>
+                    <h4 style={{ margin: '2px 0 0 0', fontSize: '1.05rem', color: '#0C3C2C' }}>
+                      Wholesale Crop Categories
+                    </h4>
+                  </div>
+                  <button
+                    onClick={() => { onNavigate('/shop'); setCropsDropdownOpen(false); }}
+                    style={{
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      color: '#0C3C2C',
+                      background: '#F5EDE2',
+                      border: '1px solid #DECDBD',
+                      borderRadius: '6px',
+                      padding: '0.35rem 0.65rem',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    View All 30+ Crops &rarr;
+                  </button>
+                </div>
+
+                {/* 2-Column Grid: Picture on Left, Label on Right */}
+                <div 
+                  style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: 'repeat(2, 1fr)', 
+                    gap: '0.75rem' 
                   }}
                 >
-                  All Available Harvests
-                </button>
-                <button
-                  onClick={() => { onNavigate('/shop?category=Bulb+Crop'); setCropsDropdownOpen(false); }}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
+                  {cropCategories.map((cat) => (
+                    <div
+                      key={cat.id}
+                      onClick={() => {
+                        onNavigate(cat.path);
+                        setCropsDropdownOpen(false);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.75rem',
+                        padding: '0.65rem 0.75rem',
+                        borderRadius: '10px',
+                        backgroundColor: '#FAF6F0',
+                        border: '1px solid #EADBCE',
+                        cursor: 'pointer',
+                        transition: 'all 0.16s ease'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = '#FFFFFF';
+                        e.currentTarget.style.borderColor = '#0C3C2C';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                        e.currentTarget.style.boxShadow = '0 6px 14px rgba(12, 60, 44, 0.12)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = '#FAF6F0';
+                        e.currentTarget.style.borderColor = '#EADBCE';
+                        e.currentTarget.style.transform = 'translateY(0)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      {/* Crop Picture on the Left Side */}
+                      <img
+                        src={cat.imageUrl}
+                        alt={cat.name}
+                        style={{
+                          width: '54px',
+                          height: '54px',
+                          borderRadius: '8px',
+                          objectFit: 'cover',
+                          flexShrink: 0,
+                          border: '1px solid rgba(0,0,0,0.08)'
+                        }}
+                      />
+                      {/* Label of the Crop & Subtitle on Right */}
+                      <div style={{ textAlign: 'left', minWidth: 0, flex: 1 }}>
+                        <div style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0C3C2C', whiteSpace: 'normal', lineHeight: 1.25 }}>
+                          {cat.name}
+                        </div>
+                        <div style={{ fontSize: '0.7rem', color: '#8A7B76', marginTop: '2px', whiteSpace: 'normal', lineHeight: 1.2 }}>
+                          {cat.sublabel}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Popout Footer Promo */}
+                <div
+                  onClick={() => { onNavigate('/market-prices'); setCropsDropdownOpen(false); }}
+                  style={{
+                    backgroundColor: '#0C3C2C',
+                    borderRadius: '8px',
+                    padding: '0.55rem 0.85rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    color: '#FFFFFF',
+                    cursor: 'pointer'
+                  }}
                 >
-                  🧅 Bulb Crops (Onions, Garlic)
-                </button>
-                <button
-                  onClick={() => { onNavigate('/shop?category=Fruit+Vegetable'); setCropsDropdownOpen(false); }}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
-                >
-                  🍅 Fruit Vegetables (Tomatoes, Eggplant)
-                </button>
-                <button
-                  onClick={() => { onNavigate('/shop?category=Leafy+Vegetable'); setCropsDropdownOpen(false); }}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
-                >
-                  🥬 Leafy Vegetables (Cabbage, Pechay)
-                </button>
-                <button
-                  onClick={() => { onNavigate('/shop?category=Root+Crop'); setCropsDropdownOpen(false); }}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
-                >
-                  🥕 Root Crops (Carrots, Ginger, Potato)
-                </button>
-                <button
-                  onClick={() => { onNavigate('/shop?category=Grains'); setCropsDropdownOpen(false); }}
-                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
-                >
-                  🌽 Grains &amp; Corn
-                </button>
+                  <span style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    📈 Live DA wholesale market price benchmarks
+                  </span>
+                  <span style={{ fontSize: '0.725rem', color: '#92DEB9', fontWeight: 700 }}>
+                    Check Prices &rarr;
+                  </span>
+                </div>
               </div>
             )}
           </div>
