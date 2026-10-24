@@ -15,7 +15,10 @@ import {
   MapPin,
   HelpCircle,
   Truck,
-  MessageSquare
+  MessageSquare,
+  Globe,
+  Facebook,
+  Instagram
 } from 'lucide-react';
 import { useChat } from '../context/ChatContext';
 
@@ -41,647 +44,297 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [cropsDropdownOpen, setCropsDropdownOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const { totalUnreadBuyer, totalUnreadFarmer } = useChat();
   const currentUnreadMessages = currentRole === 'farmer' ? totalUnreadFarmer : totalUnreadBuyer;
 
   const isActive = (path: string) => currentRoute === path;
 
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchQuery.trim()) {
+      onNavigate(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      onNavigate('/shop');
+    }
+  };
+
+  const popularTags = [
+    { label: 'Highland Tomatoes', query: 'Tomatoes' },
+    { label: 'Red Creole Onions', query: 'Red Creole Onions' },
+    { label: 'Benguet Cabbage', query: 'Cabbage' },
+    { label: 'Sweet Corn', query: 'Sweet Corn' },
+    { label: 'Organic Carrots', query: 'Carrots' },
+    { label: 'Native Eggplants', query: 'Eggplant' },
+    { label: 'Verified Farms', path: '/farmers' }
+  ];
+
   return (
     <header 
       style={{
-        backgroundColor: '#F5EDE2',
-        borderBottom: '1.5px solid #DECDBD',
+        backgroundColor: '#0C3C2C',
+        color: '#FFFFFF',
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        boxShadow: '0 2px 8px rgba(34, 23, 20, 0.04)'
+        boxShadow: '0 4px 16px rgba(12, 60, 44, 0.2)'
       }}
     >
-      {/* Top Announcement Bar (Section 4.1) */}
+      {/* =========================================================================
+          ROW 1: TOP UTILITY ROW (Shopee-Style Slim Top Bar)
+          ========================================================================= */}
       <div 
         style={{
-          backgroundColor: '#0C3C2C',
-          color: '#E2ECE5',
+          backgroundColor: '#07271C',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           fontSize: '0.75rem',
-          textAlign: 'center',
-          padding: '0.35rem 1rem',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '0.75rem'
+          padding: '0.35rem 0',
+          color: '#E2ECE5'
         }}
+        className="top-utility-bar"
       >
-        <span>
-          🌾 <strong>Harvest Season Active:</strong> Direct wholesale deliveries now serving Central Luzon, CALABARZON &amp; Metro Manila hubs.
-        </span>
-        <button 
-          onClick={() => onNavigate('/delivery-coverage')}
-          style={{ 
-            color: '#D48216', 
-            fontWeight: 700, 
-            textDecoration: 'underline', 
-            fontSize: '0.75rem' 
-          }}
-        >
-          Check Coverage &rarr;
-        </button>
-      </div>
-
-      <div className="container">
         <div 
+          className="container"
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            height: '74px'
+            flexWrap: 'wrap',
+            gap: '0.75rem'
           }}
         >
-          {/* Logo */}
-          <div 
-            onClick={() => onNavigate('/')}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
-          >
-            <Logo size="md" variant="green" />
-          </div>
-
-          {/* Desktop Navigation Links matching Screenshot 215453 */}
-          <nav 
-            style={{
-              display: 'none',
-              alignItems: 'center',
-              gap: '1.75rem',
-              height: '74px'
-            }}
-            className="desktop-nav"
-          >
-            <button
-              onClick={() => onNavigate('/')}
-              style={{
-                fontFamily: 'var(--font-headings)',
-                fontWeight: isActive('/') ? 800 : 600,
-                color: isActive('/') ? '#0C3C2C' : '#574A46',
-                height: '100%',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0 0.2rem',
-                fontSize: '0.85rem',
-                letterSpacing: '0.04em',
-                whiteSpace: 'nowrap',
-                position: 'relative',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              HOME
-              {isActive('/') && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '3px',
-                    backgroundColor: '#0C3C2C',
-                    borderRadius: '3px 3px 0 0'
-                  }}
-                />
-              )}
-            </button>
-
-            {/* CROPS dropdown */}
-            <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
-              <button
-                onClick={() => setCropsDropdownOpen(!cropsDropdownOpen)}
-                style={{
-                  fontFamily: 'var(--font-headings)',
-                  fontWeight: currentRoute.startsWith('/shop') ? 800 : 600,
-                  color: currentRoute.startsWith('/shop') ? '#0C3C2C' : '#574A46',
-                  height: '100%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.3rem',
-                  padding: '0 0.2rem',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.04em',
-                  whiteSpace: 'nowrap',
-                  position: 'relative',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                CROPS <ChevronDown size={14} />
-                {currentRoute.startsWith('/shop') && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: '3px',
-                      backgroundColor: '#0C3C2C',
-                      borderRadius: '3px 3px 0 0'
-                    }}
-                  />
-                )}
-              </button>
-
-              {cropsDropdownOpen && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    width: '220px',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '10px',
-                    boxShadow: 'var(--shadow-lg)',
-                    border: '1px solid #DECDBD',
-                    padding: '0.5rem',
-                    zIndex: 100
-                  }}
-                  onMouseLeave={() => setCropsDropdownOpen(false)}
-                >
-                  <button
-                    onClick={() => { onNavigate('/shop'); setCropsDropdownOpen(false); }}
-                    style={{
-                      width: '100%',
-                      textAlign: 'left',
-                      padding: '0.6rem 0.8rem',
-                      borderRadius: '6px',
-                      fontSize: '0.85rem',
-                      fontWeight: 600,
-                      color: '#0C3C2C',
-                      display: 'block'
-                    }}
-                  >
-                    All Available Harvests
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/shop?category=Bulb+Crop'); setCropsDropdownOpen(false); }}
-                    style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.85rem', color: '#574A46', display: 'block' }}
-                  >
-                    🧅 Bulb Crops (Onions, Garlic)
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/shop?category=Fruit+Vegetable'); setCropsDropdownOpen(false); }}
-                    style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.85rem', color: '#574A46', display: 'block' }}
-                  >
-                    🍅 Fruit Vegetables (Tomatoes, Eggplant)
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/shop?category=Leafy+Vegetable'); setCropsDropdownOpen(false); }}
-                    style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.85rem', color: '#574A46', display: 'block' }}
-                  >
-                    🥬 Leafy Vegetables (Cabbage, Pechay)
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/shop?category=Root+Crop'); setCropsDropdownOpen(false); }}
-                    style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.85rem', color: '#574A46', display: 'block' }}
-                  >
-                    🥕 Root Crops (Carrots, Ginger, Potato)
-                  </button>
-                  <button
-                    onClick={() => { onNavigate('/shop?category=Grains'); setCropsDropdownOpen(false); }}
-                    style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.85rem', color: '#574A46', display: 'block' }}
-                  >
-                    🌽 Grains &amp; Corn
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={() => onNavigate('/market-prices')}
-              style={{
-                fontFamily: 'var(--font-headings)',
-                fontWeight: isActive('/market-prices') ? 800 : 600,
-                color: isActive('/market-prices') ? '#0C3C2C' : '#574A46',
-                height: '100%',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0 0.2rem',
-                fontSize: '0.85rem',
-                letterSpacing: '0.04em',
-                whiteSpace: 'nowrap',
-                position: 'relative',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              MARKET PRICES
-              {isActive('/market-prices') && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '3px',
-                    backgroundColor: '#0C3C2C',
-                    borderRadius: '3px 3px 0 0'
-                  }}
-                />
-              )}
-            </button>
-
-            <button
-              onClick={() => onNavigate('/farmers')}
-              style={{
-                fontFamily: 'var(--font-headings)',
-                fontWeight: isActive('/farmers') ? 800 : 600,
-                color: isActive('/farmers') ? '#0C3C2C' : '#574A46',
-                height: '100%',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0 0.2rem',
-                fontSize: '0.85rem',
-                letterSpacing: '0.04em',
-                whiteSpace: 'nowrap',
-                position: 'relative',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              FARMERS
-              {isActive('/farmers') && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '3px',
-                    backgroundColor: '#0C3C2C',
-                    borderRadius: '3px 3px 0 0'
-                  }}
-                />
-              )}
-            </button>
-
-            <button
-              onClick={() => onNavigate('/about')}
-              style={{
-                fontFamily: 'var(--font-headings)',
-                fontWeight: isActive('/about') ? 800 : 600,
-                color: isActive('/about') ? '#0C3C2C' : '#574A46',
-                height: '100%',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0 0.2rem',
-                fontSize: '0.85rem',
-                letterSpacing: '0.04em',
-                whiteSpace: 'nowrap',
-                position: 'relative',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              ABOUT US
-              {isActive('/about') && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: '3px',
-                    backgroundColor: '#0C3C2C',
-                    borderRadius: '3px 3px 0 0'
-                  }}
-                />
-              )}
-            </button>
-
+          {/* Top Left: Seller & Coverage Links */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
             {currentRole === 'farmer' ? (
               <button
                 onClick={() => onNavigate('/farmer/dashboard')}
-                style={{
-                  fontFamily: 'var(--font-headings)',
-                  fontWeight: 700,
-                  color: '#9B3C1B',
-                  height: '100%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0 0.2rem',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.04em',
-                  whiteSpace: 'nowrap',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
+                style={{ color: '#D48216', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.75rem' }}
               >
-                FARMER WORKSPACE
-              </button>
-            ) : currentRole === 'buyer' ? (
-              <button
-                onClick={() => onNavigate('/buyer/orders')}
-                style={{
-                  fontFamily: 'var(--font-headings)',
-                  fontWeight: 700,
-                  color: '#9B3C1B',
-                  height: '100%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0 0.2rem',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.04em',
-                  whiteSpace: 'nowrap',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
-              >
-                MY ORDERS
+                Farmer Workspace
               </button>
             ) : (
               <button
                 onClick={() => onNavigate('/sell-with-pananim')}
-                style={{
-                  fontFamily: 'var(--font-headings)',
-                  fontWeight: 700,
-                  color: '#0C3C2C',
-                  height: '100%',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: '0 0.2rem',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.04em',
-                  whiteSpace: 'nowrap',
-                  position: 'relative',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer'
-                }}
+                style={{ color: '#E2ECE5', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.75rem' }}
               >
-                SELL WITH PANANIM
-                {isActive('/sell-with-pananim') && (
-                  <span
-                    style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: '3px',
-                      backgroundColor: '#0C3C2C',
-                      borderRadius: '3px 3px 0 0'
-                    }}
-                  />
-                )}
+                Seller Centre
               </button>
             )}
-          </nav>
 
-          {/* Right Header Controls (Search, Cart, Messages, Bell, User Pill) */}
-          <div 
-            className="right-controls"
-            style={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: '0.65rem',
-              flexShrink: 0
-            }}
-          >
-            {/* Search Icon */}
+            <span style={{ opacity: 0.35 }}>|</span>
+
             <button
-              onClick={() => onNavigate('/shop')}
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #DECDBD',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0C3C2C',
-                flexShrink: 0,
-                cursor: 'pointer'
-              }}
-              aria-label="Search crops"
+              onClick={() => onNavigate('/sell-with-pananim')}
+              style={{ color: '#E2ECE5', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.75rem' }}
             >
-              <Search size={17} />
+              Start Selling
             </button>
 
-            {/* Cart Icon with Live Count */}
+            <span style={{ opacity: 0.35 }}>|</span>
+
             <button
-              onClick={() => onNavigate('/cart')}
+              onClick={() => onNavigate('/delivery-coverage')}
+              style={{ color: '#E2ECE5', background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '0.75rem' }}
+            >
+              Delivery Coverage
+            </button>
+
+            <span style={{ opacity: 0.35 }} className="hide-on-tablet">|</span>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#B5CCC1' }} className="hide-on-tablet">
+              <span>Follow us on</span>
+              <a href="https://facebook.com" target="_blank" rel="noreferrer" style={{ color: '#FFFFFF', display: 'inline-flex' }}>
+                <Facebook size={12} />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" style={{ color: '#FFFFFF', display: 'inline-flex' }}>
+                <Instagram size={12} />
+              </a>
+            </div>
+          </div>
+
+          {/* Top Right: Notifications, Messages, Help, Language, User Account */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+            {/* Notifications link */}
+            <button
+              onClick={() => onNavigate(currentRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard')}
               style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                backgroundColor: '#0C3C2C',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                color: '#E2ECE5',
+                background: 'none',
                 border: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#FFFFFF',
-                position: 'relative',
-                flexShrink: 0,
-                cursor: 'pointer'
+                cursor: 'pointer',
+                fontSize: '0.75rem'
               }}
-              aria-label="View shopping cart"
+              title="Notifications"
             >
-              <ShoppingCart size={17} />
-              {cartCount > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-4px',
-                    backgroundColor: '#D48216',
-                    color: '#FFFFFF',
-                    fontSize: '0.65rem',
-                    fontWeight: 800,
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid #F5EDE2'
-                  }}
-                >
-                  {cartCount}
-                </span>
-              )}
-            </button>
-
-            {/* Messages Inbox Icon with Live Unread Badge */}
-            <button
-              onClick={() => onNavigate(currentRole === 'farmer' ? '/farmer/messages' : '/buyer/messages')}
-              style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '50%',
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #DECDBD',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0C3C2C',
-                position: 'relative',
-                flexShrink: 0,
-                cursor: 'pointer'
-              }}
-              aria-label={currentUnreadMessages > 0 ? `${currentUnreadMessages} unread messages` : "Messages inbox"}
-              title="Messages Inbox"
-            >
-              <MessageSquare size={17} />
-              {currentUnreadMessages > 0 && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: '-4px',
-                    right: '-4px',
-                    backgroundColor: '#9B3C1B',
-                    color: '#FFFFFF',
-                    fontSize: '0.65rem',
-                    fontWeight: 800,
-                    width: '18px',
-                    height: '18px',
-                    borderRadius: '50%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    border: '2px solid #F5EDE2'
-                  }}
-                  aria-hidden="true"
-                >
-                  {currentUnreadMessages}
-                </span>
-              )}
-            </button>
-
-            {/* Notifications */}
-            {currentUser && (
-              <button
-                onClick={() => onNavigate(currentRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard')}
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #DECDBD',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#0C3C2C',
-                  position: 'relative',
-                  flexShrink: 0,
-                  cursor: 'pointer'
-                }}
-                aria-label="Notifications"
-              >
-                <Bell size={17} />
+              <div style={{ position: 'relative', display: 'inline-flex' }}>
+                <Bell size={13} />
                 {unreadNotificationsCount > 0 && (
                   <span
                     style={{
                       position: 'absolute',
-                      top: '7px',
-                      right: '8px',
-                      width: '7px',
-                      height: '7px',
+                      top: '-3px',
+                      right: '-3px',
+                      width: '6px',
+                      height: '6px',
                       borderRadius: '50%',
-                      backgroundColor: '#9B3C1B'
+                      backgroundColor: '#D48216'
                     }}
                   />
                 )}
-              </button>
-            )}
+              </div>
+              <span>Notifications</span>
+            </button>
 
-            {/* User Profile Pill */}
+            <span style={{ opacity: 0.35 }}>|</span>
+
+            {/* Messages link with unread count */}
+            <button
+              onClick={() => onNavigate(currentRole === 'farmer' ? '/farmer/messages' : '/buyer/messages')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                color: '#E2ECE5',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.75rem'
+              }}
+              title="Chat & Messages Inbox"
+            >
+              <div style={{ position: 'relative', display: 'inline-flex' }}>
+                <MessageSquare size={13} />
+                {currentUnreadMessages > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '-4px',
+                      right: '-6px',
+                      backgroundColor: '#9B3C1B',
+                      color: '#FFFFFF',
+                      fontSize: '0.55rem',
+                      fontWeight: 800,
+                      padding: '0.05rem 0.25rem',
+                      borderRadius: '10px',
+                      lineHeight: 1
+                    }}
+                  >
+                    {currentUnreadMessages}
+                  </span>
+                )}
+              </div>
+              <span>Messages</span>
+            </button>
+
+            <span style={{ opacity: 0.35 }}>|</span>
+
+            {/* Help */}
+            <button
+              onClick={() => onNavigate('/help')}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                color: '#E2ECE5',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '0.75rem'
+              }}
+            >
+              <HelpCircle size={13} />
+              <span>Help</span>
+            </button>
+
+            <span style={{ opacity: 0.35 }}>|</span>
+
+            {/* Language */}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: '#E2ECE5', cursor: 'pointer' }}>
+              <Globe size={13} />
+              <span>English</span>
+              <ChevronDown size={11} />
+            </div>
+
+            <span style={{ opacity: 0.35 }}>|</span>
+
+            {/* User Account / Profile */}
             {currentUser ? (
               <div style={{ position: 'relative' }}>
-                <div
+                <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                   style={{
-                    display: 'flex',
+                    display: 'inline-flex',
                     alignItems: 'center',
-                    gap: '0.55rem',
-                    padding: '0 0.75rem 0 0.35rem',
-                    height: '38px',
-                    borderRadius: '9999px',
-                    backgroundColor: '#FFFFFF',
-                    border: '1.5px solid #DECDBD',
+                    gap: '0.45rem',
+                    background: 'none',
+                    border: 'none',
+                    color: '#FFFFFF',
                     cursor: 'pointer',
-                    boxSizing: 'border-box'
+                    fontWeight: 700,
+                    fontSize: '0.78rem'
                   }}
                 >
                   <img
                     src={currentUser.avatarUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80'}
                     alt={currentUser.name}
                     style={{
-                      width: '28px',
-                      height: '28px',
+                      width: '20px',
+                      height: '20px',
                       borderRadius: '50%',
-                      objectFit: 'cover'
+                      objectFit: 'cover',
+                      border: '1px solid #92DEB9'
                     }}
                   />
-                  <div style={{ textAlign: 'left' }} className="user-text">
-                    <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0C3C2C', lineHeight: 1.15, whiteSpace: 'nowrap' }}>
-                      {currentUser.name}
-                    </div>
-                    <div style={{ fontSize: '0.65rem', color: '#8A7B76', textTransform: 'capitalize', lineHeight: 1.1, whiteSpace: 'nowrap' }}>
-                      {currentRole === 'farmer' ? 'Farm Owner' : currentRole === 'staff' ? 'Staff Reviewer' : 'Wholesale Buyer'}
-                    </div>
-                  </div>
-                  <ChevronDown size={13} style={{ color: '#574A46', marginLeft: '0.1rem' }} />
-                </div>
+                  <span>{currentUser.name}</span>
+                  <ChevronDown size={12} />
+                </button>
 
+                {/* Dropdown Menu */}
                 {userDropdownOpen && (
                   <div
                     style={{
                       position: 'absolute',
-                      top: '110%',
+                      top: '120%',
                       right: 0,
                       width: '230px',
                       backgroundColor: '#FFFFFF',
-                      borderRadius: '12px',
-                      boxShadow: 'var(--shadow-lg)',
+                      borderRadius: '10px',
+                      boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
                       border: '1px solid #DECDBD',
                       padding: '0.5rem',
-                      zIndex: 100
+                      zIndex: 100,
+                      color: '#221714'
                     }}
                     onMouseLeave={() => setUserDropdownOpen(false)}
                   >
                     <div style={{ padding: '0.5rem 0.75rem', borderBottom: '1px solid #F5EDE2' }}>
-                      <p style={{ fontWeight: 700, color: '#0C3C2C', fontSize: '0.85rem' }}>{currentUser.name}</p>
-                      <p style={{ fontSize: '0.75rem', color: '#8A7B76' }}>{currentUser.email}</p>
+                      <p style={{ fontWeight: 700, color: '#0C3C2C', fontSize: '0.85rem', margin: 0 }}>{currentUser.name}</p>
+                      <p style={{ fontSize: '0.72rem', color: '#8A7B76', margin: '2px 0 0 0' }}>{currentUser.email}</p>
                     </div>
 
                     {currentRole === 'buyer' && (
                       <>
                         <button
                           onClick={() => { onNavigate('/buyer/dashboard'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
-                          <Package size={15} /> Buyer Dashboard
+                          <Package size={14} /> Buyer Dashboard
                         </button>
                         <button
                           onClick={() => { onNavigate('/buyer/orders'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
-                          <Truck size={15} /> My Orders
+                          <Truck size={14} /> My Orders
                         </button>
                         <button
                           onClick={() => { onNavigate('/buyer/messages'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <MessageSquare size={15} /> Messages
+                            <MessageSquare size={14} /> Messages
                           </div>
                           {totalUnreadBuyer > 0 && (
                             <span style={{ backgroundColor: '#9B3C1B', color: '#FFFFFF', fontSize: '0.65rem', fontWeight: 800, padding: '1px 6px', borderRadius: '10px' }}>
@@ -691,9 +344,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </button>
                         <button
                           onClick={() => { onNavigate('/buyer/profile'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
-                          <UserIcon size={15} /> Profile &amp; Addresses
+                          <UserIcon size={14} /> Profile &amp; Addresses
                         </button>
                       </>
                     )}
@@ -702,22 +355,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                       <>
                         <button
                           onClick={() => { onNavigate('/farmer/dashboard'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
-                          <TrendingUp size={15} /> Farm Dashboard
+                          <TrendingUp size={14} /> Farm Dashboard
                         </button>
                         <button
                           onClick={() => { onNavigate('/farmer/inventory'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
-                          <Package size={15} /> My Crop Inventory
+                          <Package size={14} /> My Crop Inventory
                         </button>
                         <button
                           onClick={() => { onNavigate('/farmer/messages'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
                         >
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <MessageSquare size={15} /> Buyer Inquiries
+                            <MessageSquare size={14} /> Buyer Inquiries
                           </div>
                           {totalUnreadFarmer > 0 && (
                             <span style={{ backgroundColor: '#9B3C1B', color: '#FFFFFF', fontSize: '0.65rem', fontWeight: 800, padding: '1px 6px', borderRadius: '10px' }}>
@@ -727,15 +380,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </button>
                         <button
                           onClick={() => { onNavigate('/farmer/inventory/new'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                         >
                           ➕ List New Crop
-                        </button>
-                        <button
-                          onClick={() => { onNavigate('/farmer/verification/status'); setUserDropdownOpen(false); }}
-                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                        >
-                          🛡️ Verification Status
                         </button>
                       </>
                     )}
@@ -743,7 +390,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {currentRole === 'staff' && (
                       <button
                         onClick={() => { onNavigate('/staff/verifications'); setUserDropdownOpen(false); }}
-                        style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
                       >
                         🛡️ Staff Verification Queue
                       </button>
@@ -752,43 +399,230 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <div style={{ borderTop: '1px solid #F5EDE2', marginTop: '0.25rem', paddingTop: '0.25rem' }}>
                       <button
                         onClick={() => { onLogout(); setUserDropdownOpen(false); }}
-                        style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.85rem', color: '#9B3C1B', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
+                        style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#9B3C1B', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
                       >
-                        <LogOut size={15} /> Sign Out
+                        <LogOut size={14} /> Sign Out
                       </button>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <button
-                  onClick={() => onNavigate('/login')}
-                  className="btn btn-secondary btn-sm"
-                >
-                  Sign In
-                </button>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <button
                   onClick={() => onNavigate('/register')}
-                  className="btn btn-primary btn-sm"
+                  style={{ background: 'none', border: 'none', color: '#FFFFFF', fontWeight: 600, fontSize: '0.75rem', cursor: 'pointer' }}
                 >
                   Register
                 </button>
+                <span style={{ opacity: 0.35 }}>|</span>
+                <button
+                  onClick={() => onNavigate('/login')}
+                  style={{ background: 'none', border: 'none', color: '#FFFFFF', fontWeight: 600, fontSize: '0.75rem', cursor: 'pointer' }}
+                >
+                  Sign In
+                </button>
               </div>
             )}
+          </div>
+        </div>
+      </div>
 
-            {/* Mobile Hamburger Menu Toggle */}
+      {/* =========================================================================
+          ROW 2: MAIN HEADER ROW (Logo, Large Wide Search Bar, Cart)
+          ========================================================================= */}
+      <div 
+        style={{
+          padding: '0.85rem 0 0.75rem 0'
+        }}
+      >
+        <div 
+          className="container"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '2rem'
+          }}
+        >
+          {/* Brand Logo */}
+          <div 
+            onClick={() => onNavigate('/')}
+            style={{ cursor: 'pointer', flexShrink: 0 }}
+          >
+            <Logo size="md" variant="white" showTagline={true} />
+          </div>
+
+          {/* Central Wide Search Bar + Popular Keywords (Shopee format) */}
+          <div 
+            style={{
+              flex: 1,
+              maxWidth: '820px',
+              display: 'flex',
+              flexDirection: 'column'
+            }}
+            className="header-search-container"
+          >
+            {/* Search Input Box */}
+            <form 
+              onSubmit={handleSearchSubmit}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#FFFFFF',
+                borderRadius: '6px',
+                padding: '3px',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                width: '100%'
+              }}
+            >
+              <input
+                type="text"
+                placeholder="Search fresh harvest, crops, or verified farms (e.g. Highland Tomatoes, Red Creole Onions)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  outline: 'none',
+                  padding: '0.55rem 0.85rem',
+                  fontSize: '0.9rem',
+                  color: '#221714',
+                  backgroundColor: 'transparent'
+                }}
+              />
+              <button
+                type="submit"
+                style={{
+                  backgroundColor: '#9B3C1B',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '4px',
+                  width: '56px',
+                  height: '38px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  flexShrink: 0,
+                  transition: 'background-color 0.15s ease'
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#B84520')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#9B3C1B')}
+                aria-label="Search crops"
+              >
+                <Search size={18} />
+              </button>
+            </form>
+
+            {/* Quick Popular Keywords below search input (Shopee style) */}
+            <div 
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.85rem',
+                marginTop: '0.35rem',
+                overflowX: 'auto',
+                whiteSpace: 'nowrap'
+              }}
+              className="quick-search-tags"
+            >
+              {popularTags.map((tag, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    if (tag.path) {
+                      onNavigate(tag.path);
+                    } else {
+                      setSearchQuery(tag.query || tag.label);
+                      onNavigate(`/shop?q=${encodeURIComponent(tag.query || tag.label)}`);
+                    }
+                  }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#D5E6DE',
+                    fontSize: '0.725rem',
+                    padding: 0,
+                    cursor: 'pointer',
+                    opacity: 0.85,
+                    transition: 'opacity 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.85')}
+                >
+                  {tag.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Action: Prominent Shopping Cart (Shopee style) */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
+            <button
+              onClick={() => onNavigate('/cart')}
+              style={{
+                position: 'relative',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.55rem 1rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                border: '1.5px solid rgba(255, 255, 255, 0.25)',
+                borderRadius: '8px',
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                transition: 'background-color 0.15s ease'
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)')}
+              aria-label="Shopping Cart"
+            >
+              <div style={{ position: 'relative', display: 'flex' }}>
+                <ShoppingCart size={22} />
+                {cartCount > 0 && (
+                  <span
+                    style={{
+                      position: 'absolute',
+                      top: '-8px',
+                      right: '-10px',
+                      backgroundColor: '#D48216',
+                      color: '#FFFFFF',
+                      fontSize: '0.675rem',
+                      fontWeight: 800,
+                      minWidth: '18px',
+                      height: '18px',
+                      borderRadius: '9px',
+                      padding: '0 4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      border: '2px solid #0C3C2C'
+                    }}
+                  >
+                    {cartCount}
+                  </span>
+                )}
+              </div>
+              <span style={{ fontWeight: 700, fontSize: '0.85rem' }} className="hide-on-mobile">
+                Cart
+              </span>
+            </button>
+
+            {/* Mobile Menu Toggle Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '0.4rem',
-                color: '#0C3C2C'
-              }}
               className="mobile-menu-btn"
-              aria-label="Toggle navigation"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: '#FFFFFF',
+                padding: '0.4rem',
+                cursor: 'pointer',
+                display: 'none'
+              }}
+              aria-label="Toggle mobile menu"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -796,93 +630,502 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
+      {/* =========================================================================
+          ROW 3: CATEGORY & PAGE NAVIGATION ROW (Spacious, Uncluttered Bar)
+          ========================================================================= */}
+      <nav 
+        style={{
+          backgroundColor: '#07271C',
+          borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+        }}
+        className="desktop-nav-bar"
+      >
         <div 
+          className="container"
           style={{
-            backgroundColor: '#FFFFFF',
-            borderTop: '1px solid #DECDBD',
-            padding: '1.25rem',
-            boxShadow: 'var(--shadow-lg)'
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            gap: '2.5rem',
+            height: '42px',
+            overflowX: 'auto',
+            whiteSpace: 'nowrap'
           }}
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {/* HOME */}
+          <button
+            onClick={() => onNavigate('/')}
+            style={{
+              fontFamily: 'var(--font-headings)',
+              fontWeight: isActive('/') ? 800 : 600,
+              color: isActive('/') ? '#D48216' : '#FFFFFF',
+              height: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0 0.25rem',
+              fontSize: '0.85rem',
+              letterSpacing: '0.04em',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
+            HOME
+            {isActive('/') && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  backgroundColor: '#D48216',
+                  borderRadius: '3px 3px 0 0'
+                }}
+              />
+            )}
+          </button>
+
+          {/* ALL CROPS DROPDOWN */}
+          <div style={{ position: 'relative', height: '100%', display: 'flex', alignItems: 'center' }}>
+            <button
+              onClick={() => setCropsDropdownOpen(!cropsDropdownOpen)}
+              style={{
+                fontFamily: 'var(--font-headings)',
+                fontWeight: currentRoute.startsWith('/shop') ? 800 : 600,
+                color: currentRoute.startsWith('/shop') ? '#D48216' : '#FFFFFF',
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.35rem',
+                padding: '0 0.25rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                position: 'relative'
+              }}
+            >
+              ALL CROPS <ChevronDown size={13} />
+              {currentRoute.startsWith('/shop') && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    backgroundColor: '#D48216',
+                    borderRadius: '3px 3px 0 0'
+                  }}
+                />
+              )}
+            </button>
+
+            {cropsDropdownOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  width: '230px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '10px',
+                  boxShadow: '0 10px 25px rgba(0,0,0,0.25)',
+                  border: '1px solid #DECDBD',
+                  padding: '0.5rem',
+                  zIndex: 100,
+                  color: '#221714'
+                }}
+                onMouseLeave={() => setCropsDropdownOpen(false)}
+              >
+                <button
+                  onClick={() => { onNavigate('/shop'); setCropsDropdownOpen(false); }}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    padding: '0.6rem 0.8rem',
+                    borderRadius: '6px',
+                    fontSize: '0.85rem',
+                    fontWeight: 700,
+                    color: '#0C3C2C',
+                    display: 'block'
+                  }}
+                >
+                  All Available Harvests
+                </button>
+                <button
+                  onClick={() => { onNavigate('/shop?category=Bulb+Crop'); setCropsDropdownOpen(false); }}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
+                >
+                  🧅 Bulb Crops (Onions, Garlic)
+                </button>
+                <button
+                  onClick={() => { onNavigate('/shop?category=Fruit+Vegetable'); setCropsDropdownOpen(false); }}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
+                >
+                  🍅 Fruit Vegetables (Tomatoes, Eggplant)
+                </button>
+                <button
+                  onClick={() => { onNavigate('/shop?category=Leafy+Vegetable'); setCropsDropdownOpen(false); }}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
+                >
+                  🥬 Leafy Vegetables (Cabbage, Pechay)
+                </button>
+                <button
+                  onClick={() => { onNavigate('/shop?category=Root+Crop'); setCropsDropdownOpen(false); }}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
+                >
+                  🥕 Root Crops (Carrots, Ginger, Potato)
+                </button>
+                <button
+                  onClick={() => { onNavigate('/shop?category=Grains'); setCropsDropdownOpen(false); }}
+                  style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.8rem', fontSize: '0.825rem', color: '#574A46', display: 'block' }}
+                >
+                  🌽 Grains &amp; Corn
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* MARKET PRICES */}
+          <button
+            onClick={() => onNavigate('/market-prices')}
+            style={{
+              fontFamily: 'var(--font-headings)',
+              fontWeight: isActive('/market-prices') ? 800 : 600,
+              color: isActive('/market-prices') ? '#D48216' : '#FFFFFF',
+              height: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0 0.25rem',
+              fontSize: '0.85rem',
+              letterSpacing: '0.04em',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
+            MARKET PRICES
+            {isActive('/market-prices') && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  backgroundColor: '#D48216',
+                  borderRadius: '3px 3px 0 0'
+                }}
+              />
+            )}
+          </button>
+
+          {/* FARMERS DIRECTORY */}
+          <button
+            onClick={() => onNavigate('/farmers')}
+            style={{
+              fontFamily: 'var(--font-headings)',
+              fontWeight: isActive('/farmers') ? 800 : 600,
+              color: isActive('/farmers') ? '#D48216' : '#FFFFFF',
+              height: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0 0.25rem',
+              fontSize: '0.85rem',
+              letterSpacing: '0.04em',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
+            FARMERS DIRECTORY
+            {isActive('/farmers') && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  backgroundColor: '#D48216',
+                  borderRadius: '3px 3px 0 0'
+                }}
+              />
+            )}
+          </button>
+
+          {/* DELIVERY COVERAGE */}
+          <button
+            onClick={() => onNavigate('/delivery-coverage')}
+            style={{
+              fontFamily: 'var(--font-headings)',
+              fontWeight: isActive('/delivery-coverage') ? 800 : 600,
+              color: isActive('/delivery-coverage') ? '#D48216' : '#FFFFFF',
+              height: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0 0.25rem',
+              fontSize: '0.85rem',
+              letterSpacing: '0.04em',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
+            DELIVERY COVERAGE
+            {isActive('/delivery-coverage') && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  backgroundColor: '#D48216',
+                  borderRadius: '3px 3px 0 0'
+                }}
+              />
+            )}
+          </button>
+
+          {/* ABOUT US */}
+          <button
+            onClick={() => onNavigate('/about')}
+            style={{
+              fontFamily: 'var(--font-headings)',
+              fontWeight: isActive('/about') ? 800 : 600,
+              color: isActive('/about') ? '#D48216' : '#FFFFFF',
+              height: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0 0.25rem',
+              fontSize: '0.85rem',
+              letterSpacing: '0.04em',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
+            ABOUT US
+            {isActive('/about') && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  backgroundColor: '#D48216',
+                  borderRadius: '3px 3px 0 0'
+                }}
+              />
+            )}
+          </button>
+
+          {/* HOW IT WORKS */}
+          <button
+            onClick={() => onNavigate('/how-it-works')}
+            style={{
+              fontFamily: 'var(--font-headings)',
+              fontWeight: isActive('/how-it-works') ? 800 : 600,
+              color: isActive('/how-it-works') ? '#D48216' : '#FFFFFF',
+              height: '100%',
+              display: 'inline-flex',
+              alignItems: 'center',
+              padding: '0 0.25rem',
+              fontSize: '0.85rem',
+              letterSpacing: '0.04em',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              position: 'relative'
+            }}
+          >
+            HOW IT WORKS
+            {isActive('/how-it-works') && (
+              <span
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: '3px',
+                  backgroundColor: '#D48216',
+                  borderRadius: '3px 3px 0 0'
+                }}
+              />
+            )}
+          </button>
+
+          {/* SELL WITH PANANIM / ROLE SPECIFIC */}
+          {currentRole === 'farmer' ? (
+            <button
+              onClick={() => onNavigate('/farmer/dashboard')}
+              style={{
+                fontFamily: 'var(--font-headings)',
+                fontWeight: 700,
+                color: '#D48216',
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 0.25rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              FARMER DASHBOARD
+            </button>
+          ) : currentRole === 'buyer' ? (
+            <button
+              onClick={() => onNavigate('/buyer/orders')}
+              style={{
+                fontFamily: 'var(--font-headings)',
+                fontWeight: 700,
+                color: '#D48216',
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 0.25rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer'
+              }}
+            >
+              MY ORDERS
+            </button>
+          ) : (
+            <button
+              onClick={() => onNavigate('/sell-with-pananim')}
+              style={{
+                fontFamily: 'var(--font-headings)',
+                fontWeight: 700,
+                color: '#D48216',
+                height: '100%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 0.25rem',
+                fontSize: '0.85rem',
+                letterSpacing: '0.04em',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                position: 'relative'
+              }}
+            >
+              SELL WITH PANANIM
+              {isActive('/sell-with-pananim') && (
+                <span
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    backgroundColor: '#D48216',
+                    borderRadius: '3px 3px 0 0'
+                  }}
+                />
+              )}
+            </button>
+          )}
+        </div>
+      </nav>
+
+      {/* =========================================================================
+          MOBILE COLLAPSIBLE MENU
+          ========================================================================= */}
+      {mobileMenuOpen && (
+        <div
+          style={{
+            backgroundColor: '#07271C',
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '1.25rem',
+            color: '#FFFFFF'
+          }}
+          className="mobile-menu-container"
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
             <button
               onClick={() => { onNavigate('/'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#0C3C2C', fontSize: '1rem' }}
+              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#FFFFFF', fontSize: '1rem', background: 'none', border: 'none' }}
             >
               HOME
             </button>
             <button
               onClick={() => { onNavigate('/shop'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#0C3C2C', fontSize: '1rem' }}
+              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#FFFFFF', fontSize: '1rem', background: 'none', border: 'none' }}
             >
-              SHOP AVAILABLE CROPS
+              ALL CROPS
             </button>
             <button
               onClick={() => { onNavigate('/market-prices'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#0C3C2C', fontSize: '1rem' }}
+              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#FFFFFF', fontSize: '1rem', background: 'none', border: 'none' }}
             >
-              MARKET PRICES REFERENCE
+              MARKET PRICES
             </button>
             <button
               onClick={() => { onNavigate('/farmers'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#0C3C2C', fontSize: '1rem' }}
+              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#FFFFFF', fontSize: '1rem', background: 'none', border: 'none' }}
             >
-              FARMER DIRECTORY
+              FARMERS DIRECTORY
             </button>
             <button
-              onClick={() => { onNavigate('/how-it-works'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#0C3C2C', fontSize: '1rem' }}
+              onClick={() => { onNavigate('/delivery-coverage'); setMobileMenuOpen(false); }}
+              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#FFFFFF', fontSize: '1rem', background: 'none', border: 'none' }}
             >
-              HOW ORDERING WORKS
-            </button>
-            <button
-              onClick={() => { onNavigate('/sell-with-pananim'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#D48216', fontSize: '1rem' }}
-            >
-              SELL WITH PANANIM
+              DELIVERY COVERAGE
             </button>
             <button
               onClick={() => { onNavigate('/about'); setMobileMenuOpen(false); }}
-              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#0C3C2C', fontSize: '1rem' }}
+              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#FFFFFF', fontSize: '1rem', background: 'none', border: 'none' }}
             >
               ABOUT US
+            </button>
+            <button
+              onClick={() => { onNavigate('/sell-with-pananim'); setMobileMenuOpen(false); }}
+              style={{ textAlign: 'left', padding: '0.5rem', fontWeight: 700, color: '#D48216', fontSize: '1rem', background: 'none', border: 'none' }}
+            >
+              SELL WITH PANANIM
             </button>
           </div>
         </div>
       )}
 
+      {/* Responsive Styles */}
       <style>{`
-        @media (min-width: 900px) {
-          .desktop-nav {
-            display: flex !important;
-          }
-          .mobile-menu-btn {
+        @media (max-width: 900px) {
+          .top-utility-bar {
             display: none !important;
           }
-          .user-text {
+          .desktop-nav-bar {
+            display: none !important;
+          }
+          .mobile-menu-btn {
             display: block !important;
           }
-        }
-        @media (max-width: 1220px) {
-          .desktop-nav {
-            gap: 1.1rem !important;
+          .quick-search-tags {
+            display: none !important;
           }
-          .desktop-nav button {
-            font-size: 0.8rem !important;
-            padding: 0 0.15rem !important;
-          }
-          .right-controls {
-            gap: 0.45rem !important;
+          .hide-on-mobile {
+            display: none !important;
           }
         }
         @media (max-width: 1040px) {
-          .desktop-nav {
-            gap: 0.75rem !important;
-          }
-          .desktop-nav button {
-            font-size: 0.76rem !important;
+          .hide-on-tablet {
+            display: none !important;
           }
         }
       `}</style>
