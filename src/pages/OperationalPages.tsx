@@ -14,6 +14,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useChat } from '../context/ChatContext';
+import { Logo } from '../components/Logo';
 
 interface InvoicePageProps {
   order: OrderGroup;
@@ -45,16 +46,16 @@ export const InvoicePage: React.FC<InvoicePageProps> = ({ order, onNavigate }) =
         >
           {/* Invoice Header */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '2px solid #0C3C2C', paddingBottom: '1.5rem', marginBottom: '2rem' }}>
-            <div>
-              <div style={{ fontFamily: 'var(--font-headings)', fontSize: '1.8rem', fontWeight: 800, color: '#0C3C2C' }}>
-                PANANIM
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <Logo size="md" variant="green" showTagline={false} />
+              <div>
+                <span style={{ fontSize: '0.8rem', color: '#574A46', display: 'block' }}>
+                  Philippine Agricultural Logistics &amp; Wholesale Marketplace
+                </span>
+                <p style={{ fontSize: '0.75rem', color: '#8A7B76', marginTop: '0.25rem', margin: 0 }}>
+                  TIN: 009-412-884-000 &bull; Escrow Clearing Settlement Depot
+                </p>
               </div>
-              <span style={{ fontSize: '0.8rem', color: '#574A46' }}>
-                Philippine Agricultural Logistics &amp; Wholesale Marketplace
-              </span>
-              <p style={{ fontSize: '0.75rem', color: '#8A7B76', marginTop: '0.25rem' }}>
-                TIN: 009-412-884-000 &bull; Escrow Clearing Settlement Depot
-              </p>
             </div>
 
             <div style={{ textAlign: 'right' }}>

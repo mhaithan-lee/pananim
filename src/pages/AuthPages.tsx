@@ -11,6 +11,7 @@ import {
   User as UserIcon,
   Sparkles
 } from 'lucide-react';
+import { Logo } from '../components/Logo';
 
 interface AuthPageProps {
   onNavigate: (route: string) => void;
@@ -46,8 +47,10 @@ export const LoginPage: React.FC<AuthPageProps> = ({ onNavigate, onLoginSuccess 
     <div style={{ padding: '4rem 0 6rem 0' }}>
       <div className="container" style={{ maxWidth: '440px' }}>
         <div className="card" style={{ padding: '2.5rem 2rem', backgroundColor: '#FFFFFF' }}>
-          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-            <span className="badge badge-green" style={{ marginBottom: '0.5rem' }}>Pananim Sign In</span>
+          <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+              <Logo size="md" variant="green" showTagline={true} />
+            </div>
             <h2 style={{ fontSize: '1.8rem', color: '#0C3C2C' }}>Welcome Back</h2>
             <p style={{ fontSize: '0.85rem' }}>Access your wholesale buying or farm management workspace.</p>
           </div>
@@ -103,7 +106,9 @@ export const RegisterPage: React.FC<{ onNavigate: (route: string) => void }> = (
     <div style={{ padding: '4rem 0 6rem 0' }}>
       <div className="container" style={{ maxWidth: '680px' }}>
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <span className="badge badge-green" style={{ marginBottom: '0.5rem' }}>Join Pananim</span>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <Logo size="lg" variant="green" showTagline={true} />
+          </div>
           <h1 style={{ fontSize: '2.2rem', color: '#0C3C2C' }}>Select Your Platform Account Type</h1>
           <p style={{ maxWidth: '520px', margin: '0.5rem auto 0 auto' }}>
             Are you sourcing wholesale agricultural produce, or are you a farmer bringing your harvest to market?
@@ -157,6 +162,9 @@ export const BuyerRegisterPage: React.FC<{ onNavigate: (route: string) => void }
     <div style={{ padding: '3.5rem 0 6rem 0' }}>
       <div className="container" style={{ maxWidth: '520px' }}>
         <div className="card" style={{ padding: '2.5rem', backgroundColor: '#FFFFFF' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
+            <Logo size="md" variant="green" showTagline={true} />
+          </div>
           <h2 style={{ fontSize: '1.75rem', color: '#0C3C2C', marginBottom: '0.25rem' }}>Buyer Registration</h2>
           <p style={{ fontSize: '0.85rem', marginBottom: '1.75rem' }}>Create your commercial sourcing profile on Pananim.</p>
 
