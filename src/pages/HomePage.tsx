@@ -38,7 +38,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('All Locations');
   const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(null);
-  const [heroPhoto, setHeroPhoto] = useState<'/images/hero-farmer-sunlit.png' | '/images/hero-farmer-basket.png'>('/images/hero-farmer-sunlit.png');
+  const heroPhoto = '/images/hero-farmer-sunlit.png';
   const [selectedReviewPhoto, setSelectedReviewPhoto] = useState<string | null>(null);
 
   const featuredCrops = cropListings.slice(0, 8);
@@ -132,31 +132,8 @@ export const HomePage: React.FC<HomePageProps> = ({
       >
         <div className="container">
           <div className="hero-content">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '0.75rem' }}>
-              <div className="hero-eyebrow" style={{ margin: 0 }}>
-                <Sparkles size={16} /> ONE NETWORK, SHARED GROWTH
-              </div>
-              <button
-                type="button"
-                onClick={() => setHeroPhoto(prev => prev.includes('sunlit') ? '/images/hero-farmer-basket.png' : '/images/hero-farmer-sunlit.png')}
-                style={{
-                  background: 'rgba(7, 39, 28, 0.75)',
-                  color: '#92DEB9',
-                  border: '1px solid #92DEB9',
-                  borderRadius: '20px',
-                  padding: '0.25rem 0.75rem',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '0.35rem',
-                  backdropFilter: 'blur(4px)'
-                }}
-                title="Switch between the 2 attached hero banner pictures"
-              >
-                🔄 Switch Banner: {heroPhoto.includes('sunlit') ? 'Photo 2 (Sunlit Field)' : 'Photo 1 (Harvest Basket)'}
-              </button>
+            <div className="hero-eyebrow" style={{ marginBottom: '0.75rem' }}>
+              <Sparkles size={16} /> ONE NETWORK, SHARED GROWTH
             </div>
             <h1 className="hero-title">
               Fresh Harvests.<br />Direct Connections.
