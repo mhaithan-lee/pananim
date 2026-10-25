@@ -267,38 +267,131 @@ export const HomePage: React.FC<HomePageProps> = ({
           <div 
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
               gap: '1.75rem'
             }}
           >
-            <div className="card" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#E2ECE5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0C3C2C', marginBottom: '1.25rem' }}>
-                <ShieldCheck size={26} />
+            {/* Card 1: Farmer Identity Reviewed */}
+            <div 
+              className="card card-hover" 
+              style={{ 
+                backgroundColor: '#FFFFFF', 
+                borderRadius: '16px', 
+                overflow: 'hidden', 
+                border: '1px solid #EADBCE',
+                display: 'flex', 
+                flexDirection: 'column',
+                boxShadow: '0 4px 14px rgba(12, 60, 44, 0.06)',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              <div style={{ height: '185px', width: '100%', overflow: 'hidden', backgroundColor: '#E2ECE5', position: 'relative' }}>
+                <img
+                  src="https://images.unsplash.com/photo-1595974482597-4b8da8879bc5?auto=format&fit=crop&w=600&q=80"
+                  alt="Farmer Identity Reviewed"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?auto=format&fit=crop&w=600&q=80';
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    transition: 'transform 0.4s ease'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                />
               </div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Farmer Identity Reviewed</h3>
-              <p>
-                Every listing belongs to a documented farmer or registered cooperative. We inspect official registry records and land tenure evidence before granting active seller badges.
-              </p>
+              <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem', color: '#0C3C2C', fontWeight: 800 }}>
+                  Farmer Identity Reviewed
+                </h3>
+                <p style={{ color: '#5C4E4B', fontSize: '0.925rem', lineHeight: '1.6', margin: 0 }}>
+                  Every listing belongs to a documented farmer or registered cooperative. We inspect official registry records and land tenure evidence before granting active seller badges.
+                </p>
+              </div>
             </div>
 
-            <div className="card" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#FEF3E2', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D48216', marginBottom: '1.25rem' }}>
-                <Scale size={26} />
+            {/* Card 2: Transparent Unit Pricing */}
+            <div 
+              className="card card-hover" 
+              style={{ 
+                backgroundColor: '#FFFFFF', 
+                borderRadius: '16px', 
+                overflow: 'hidden', 
+                border: '1px solid #EADBCE',
+                display: 'flex', 
+                flexDirection: 'column',
+                boxShadow: '0 4px 14px rgba(12, 60, 44, 0.06)',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              <div style={{ height: '185px', width: '100%', overflow: 'hidden', backgroundColor: '#FEF3E2', position: 'relative' }}>
+                <img
+                  src="https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=600&q=80"
+                  alt="Transparent Unit Pricing"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=600&q=80';
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    transition: 'transform 0.4s ease'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                />
               </div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Transparent Unit Pricing</h3>
-              <p>
-                Clear prices per kilogram, crate, or sack with tiered wholesale discounts. No hidden trading fees or unpredictable brokerage cuts.
-              </p>
+              <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem', color: '#0C3C2C', fontWeight: 800 }}>
+                  Transparent Unit Pricing
+                </h3>
+                <p style={{ color: '#5C4E4B', fontSize: '0.925rem', lineHeight: '1.6', margin: 0 }}>
+                  Clear prices per kilogram, crate, or sack with tiered wholesale discounts. No hidden trading fees or unpredictable brokerage cuts.
+                </p>
+              </div>
             </div>
 
-            <div className="card" style={{ padding: '1.75rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ width: '48px', height: '48px', borderRadius: '12px', backgroundColor: '#FCEBE6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9B3C1B', marginBottom: '1.25rem' }}>
-                <Truck size={26} />
+            {/* Card 3: Coordinated Shared Cargo */}
+            <div 
+              className="card card-hover" 
+              style={{ 
+                backgroundColor: '#FFFFFF', 
+                borderRadius: '16px', 
+                overflow: 'hidden', 
+                border: '1px solid #EADBCE',
+                display: 'flex', 
+                flexDirection: 'column',
+                boxShadow: '0 4px 14px rgba(12, 60, 44, 0.06)',
+                transition: 'all 0.25s ease'
+              }}
+            >
+              <div style={{ height: '185px', width: '100%', overflow: 'hidden', backgroundColor: '#FCEBE6', position: 'relative' }}>
+                <img
+                  src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=600&q=80"
+                  alt="Coordinated Shared Cargo"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=600&q=80';
+                  }}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    transition: 'transform 0.4s ease'
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
+                  onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                />
               </div>
-              <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Coordinated Shared Cargo</h3>
-              <p>
-                Consolidated freight routes connecting provincial growing centers with urban aggregation points, enabling smaller farms to ship alongside larger cooperatives.
-              </p>
+              <div style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <h3 style={{ fontSize: '1.25rem', marginBottom: '0.6rem', color: '#0C3C2C', fontWeight: 800 }}>
+                  Coordinated Shared Cargo
+                </h3>
+                <p style={{ color: '#5C4E4B', fontSize: '0.925rem', lineHeight: '1.6', margin: 0 }}>
+                  Consolidated freight routes connecting provincial growing centers with urban aggregation points, enabling smaller farms to ship alongside larger cooperatives.
+                </p>
+              </div>
             </div>
           </div>
         </div>
