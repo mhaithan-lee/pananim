@@ -7,9 +7,10 @@ import {
   ChevronDown, 
   ChevronUp, 
   CheckCircle, 
-  RefreshCw, 
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 interface DevScenarioBarProps {
@@ -27,12 +28,28 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
   onNavigate,
   onLoadWorkedExample950
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<'scenarios' | 'routes'>('scenarios');
+  // Always open by default so the user does NOT need to click the route navigator button!
+  const [isOpen, setIsOpen] = useState(() => {
+    try {
+      const saved = localStorage.getItem('pananim_quick_nav_open');
+      if (saved !== null) return saved === 'true';
+    } catch (e) {}
+    return true; // Default open for quick access
+  });
+
+  const toggleOpen = () => {
+    setIsOpen((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('pananim_quick_nav_open', String(next));
+      } catch (e) {}
+      return next;
+    });
+  };
 
   const routeGroups = [
     {
-      group: 'Public & Marketplace',
+      group: 'PUBLIC & MARKETPLACE',
       routes: [
         { path: '/', label: '01 / Homepage (16 sections)' },
         { path: '/shop', label: '02 /shop Crop Marketplace' },
@@ -50,7 +67,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
       ]
     },
     {
-      group: 'Auth & Verification (Consolidated)',
+      group: 'AUTH & VERIFICATION (CONSOLIDATED)',
       routes: [
         { path: '/login', label: '21 /login Unified Demo Sign In & Recovery' },
         { path: '/register', label: '17 /register Unified Buyer & Farmer Registration' },
@@ -61,7 +78,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
       ]
     },
     {
-      group: 'Buyer Commerce & Workspace',
+      group: 'BUYER COMMERCE & WORKSPACE',
       routes: [
         { path: '/cart', label: '27 /cart Grouped by Farmer' },
         { path: '/checkout/address', label: '28 /checkout/address Delivery' },
@@ -79,7 +96,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
       ]
     },
     {
-      group: 'Farmer Operations (Consolidated 6 Destinations)',
+      group: 'FARMER OPERATIONS (CONSOLIDATED 6 DESTINATIONS)',
       routes: [
         { path: '/farmer/dashboard', label: '1. Dashboard (Overview)' },
         { path: '/farmer/inventory', label: '2. My Crops & Stock (Contextual Listings)' },
@@ -92,11 +109,11 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
       ]
     },
     {
-      group: 'Admin Experience (Redesigned)',
+      group: 'ADMIN EXPERIENCE (REDESIGNED)',
       routes: [
         { path: '/admin', label: 'Admin Overview (Pananim admin overview)' },
         { path: '/admin/crops', label: 'Crop Listings (Pananim crop listings)' },
-        { path: '/admin/farmers', label: 'Farmers & Buyers (Pananim farmers & buyers)' },
+        { path: '/admin/users', label: 'User Management (Farmers & Buyers)' },
         { path: '/admin/transactions', label: 'Transactions (Pananim transactions)' },
         { path: '/admin/market-prices', label: 'Market Prices (Pananim market prices)' },
         { path: '/admin/reports', label: 'Reports & Disputes (Pananim reports & disputes)' },
@@ -122,21 +139,22 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
         color: '#E2ECE5',
         borderBottom: '2px solid #D48216',
         fontSize: '0.825rem',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
+        boxShadow: '0 4px 16px rgba(0,0,0,0.35)'
       }}
     >
+      {/* Top Controls Bar */}
       <div 
-        className="container"
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '0.45rem 1.25rem',
           flexWrap: 'wrap',
-          gap: '0.75rem'
+          gap: '0.75rem',
+          borderBottom: isOpen ? '1px solid #16533F' : 'none'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
           <span 
             style={{ 
               display: 'inline-flex', 
@@ -151,16 +169,16 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               fontSize: '0.725rem'
             }}
           >
-            <Terminal size={12} /> PROTOTYPE SUITE
+            <Terminal size={12} /> PROTOTYPE QUICK ACCESS
           </span>
           <span style={{ color: '#A0B5AC' }}>
-            Current Route: <strong style={{ color: '#FFFFFF' }}>{currentRoute}</strong>
+            Current Route: <strong style={{ color: '#92DEB9', backgroundColor: 'rgba(146, 222, 185, 0.1)', padding: '2px 8px', borderRadius: '4px' }}>{currentRoute}</strong>
           </span>
         </div>
 
-        {/* Persona Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          <span style={{ color: '#A0B5AC', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+        {/* Persona Switcher Buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
+          <span style={{ color: '#A0B5AC', display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.775rem' }}>
             <Users size={13} /> Persona:
           </span>
           <button
@@ -172,7 +190,8 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               color: currentRole === 'guest' ? '#FFFFFF' : '#A0B5AC',
               border: '1px solid ' + (currentRole === 'guest' ? '#92DEB9' : '#1D3B2F'),
               fontWeight: currentRole === 'guest' ? 700 : 500,
-              fontSize: '0.775rem'
+              fontSize: '0.775rem',
+              cursor: 'pointer'
             }}
           >
             Guest
@@ -186,7 +205,8 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               color: currentRole === 'buyer' ? '#FFFFFF' : '#A0B5AC',
               border: '1px solid ' + (currentRole === 'buyer' ? '#92DEB9' : '#1D3B2F'),
               fontWeight: currentRole === 'buyer' ? 700 : 500,
-              fontSize: '0.775rem'
+              fontSize: '0.775rem',
+              cursor: 'pointer'
             }}
           >
             Buyer (Mateo)
@@ -200,7 +220,8 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               color: currentRole === 'farmer' ? '#FFFFFF' : '#A0B5AC',
               border: '1px solid ' + (currentRole === 'farmer' ? '#92DEB9' : '#1D3B2F'),
               fontWeight: currentRole === 'farmer' ? 700 : 500,
-              fontSize: '0.775rem'
+              fontSize: '0.775rem',
+              cursor: 'pointer'
             }}
           >
             Farmer (Ramon)
@@ -214,14 +235,15 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               color: currentRole === 'staff' ? '#FFFFFF' : '#A0B5AC',
               border: '1px solid ' + (currentRole === 'staff' ? '#92DEB9' : '#1D3B2F'),
               fontWeight: currentRole === 'staff' ? 700 : 500,
-              fontSize: '0.775rem'
+              fontSize: '0.775rem',
+              cursor: 'pointer'
             }}
           >
-            Admin (Atty. Cristina)
+            Admin (Ana)
           </button>
         </div>
 
-        {/* Worked Scenario & Route Drawer Toggle */}
+        {/* Action Buttons: ₱950 Worked Demo & Quick Nav Visibility Toggle */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <button
             onClick={onLoadWorkedExample950}
@@ -236,16 +258,18 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.35rem',
-              border: '1px solid #D46944'
+              border: '1px solid #D46944',
+              cursor: 'pointer'
             }}
           >
             <Sparkles size={12} /> Run ₱950 Worked Demo
           </button>
 
           <button
-            onClick={() => setIsOpen(!isOpen)}
+            onClick={toggleOpen}
+            title={isOpen ? 'Collapse Quick Access space' : 'Show Quick Access space'}
             style={{
-              backgroundColor: '#16533F',
+              backgroundColor: isOpen ? '#16533F' : 'transparent',
               color: '#FFFFFF',
               padding: '0.25rem 0.65rem',
               borderRadius: '4px',
@@ -254,83 +278,142 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.35rem',
-              border: '1px solid #2B785E'
+              border: '1px solid ' + (isOpen ? '#92DEB9' : '#2B785E'),
+              cursor: 'pointer'
             }}
           >
-            <Layers size={12} /> Route Navigator {isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+            <Layers size={12} /> 
+            {isOpen ? 'Quick Access (Active)' : 'Show Quick Access'} 
+            {isOpen ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
           </button>
         </div>
       </div>
 
-      {/* Expanded Route Navigator Drawer */}
+      {/* QUICK ACCESS SPACE (DIRECTLY VISIBLE ON TOP WITHOUT CLICKING) */}
       {isOpen && (
         <div
           style={{
             backgroundColor: '#0A3124',
-            borderTop: '1px solid #1D4B39',
-            padding: '1.25rem',
-            maxHeight: '420px',
+            padding: '1rem 1.25rem 1.25rem 1.25rem',
+            maxHeight: '380px',
             overflowY: 'auto'
           }}
         >
-          <div className="container">
+          <div style={{ maxWidth: '100%', margin: '0 auto' }}>
+            {/* Header matching user's screenshot */}
             <div 
               style={{ 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'space-between',
-                marginBottom: '1rem',
-                borderBottom: '1px solid #16533F',
-                paddingBottom: '0.5rem'
+                marginBottom: '0.85rem',
+                borderBottom: '1px solid rgba(146, 222, 185, 0.2)',
+                paddingBottom: '0.5rem',
+                flexWrap: 'wrap',
+                gap: '0.5rem'
               }}
             >
-              <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '0.9rem' }}>
-                Complete 81-Route &amp; State Navigator (Sections 3 &amp; 15 Specification)
-              </span>
-              <span style={{ color: '#92DEB9', fontSize: '0.75rem' }}>
-                Click any route to navigate instantly in prototype
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                <span style={{ fontWeight: 800, color: '#FFFFFF', fontSize: '0.925rem', letterSpacing: '-0.01em' }}>
+                  Complete 81-Route &amp; State Navigator (Sections 3 &amp; 15 Specification)
+                </span>
+                <span 
+                  style={{ 
+                    backgroundColor: 'rgba(212, 130, 22, 0.2)', 
+                    color: '#F8D28A', 
+                    border: '1px solid #D48216', 
+                    padding: '1px 6px', 
+                    borderRadius: '10px', 
+                    fontSize: '0.65rem', 
+                    fontWeight: 700 
+                  }}
+                >
+                  QUICK ACCESS READY
+                </span>
+              </div>
+              <span style={{ color: '#92DEB9', fontSize: '0.775rem', fontWeight: 500 }}>
+                Click any route to navigate instantly in prototype (remains open for quick switching)
               </span>
             </div>
 
+            {/* 5-Column Grid matching user's screenshot */}
             <div 
               style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                gap: '1.25rem'
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '0.85rem',
+                alignItems: 'start'
               }}
             >
               {routeGroups.map((group, idx) => (
-                <div key={idx} style={{ backgroundColor: '#07271C', padding: '0.75rem', borderRadius: '8px' }}>
-                  <h5 style={{ color: '#D48216', fontSize: '0.8rem', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                <div 
+                  key={idx} 
+                  style={{ 
+                    backgroundColor: '#07271C', 
+                    padding: '0.85rem', 
+                    borderRadius: '8px',
+                    border: '1px solid rgba(255, 255, 255, 0.06)'
+                  }}
+                >
+                  <h5 
+                    style={{ 
+                      color: '#D48216', 
+                      fontSize: '0.78rem', 
+                      fontWeight: 800,
+                      marginBottom: '0.6rem', 
+                      textTransform: 'uppercase', 
+                      letterSpacing: '0.05em',
+                      borderBottom: '1px solid rgba(212, 130, 22, 0.2)',
+                      paddingBottom: '0.35rem'
+                    }}
+                  >
                     {group.group}
                   </h5>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                    {group.routes.map((rt) => (
-                      <button
-                        key={rt.path}
-                        onClick={() => {
-                          onNavigate(rt.path);
-                          setIsOpen(false);
-                        }}
-                        style={{
-                          textAlign: 'left',
-                          fontSize: '0.75rem',
-                          padding: '0.3rem 0.5rem',
-                          borderRadius: '4px',
-                          color: currentRoute === rt.path ? '#FFFFFF' : '#A0B5AC',
-                          backgroundColor: currentRoute === rt.path ? '#16533F' : 'transparent',
-                          border: currentRoute === rt.path ? '1px solid #92DEB9' : '1px solid transparent',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between'
-                        }}
-                      >
-                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {rt.label}
-                        </span>
-                        {currentRoute === rt.path && <CheckCircle size={11} style={{ color: '#92DEB9', flexShrink: 0 }} />}
-                      </button>
-                    ))}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                    {group.routes.map((rt) => {
+                      const isActive = currentRoute === rt.path || (rt.path === '/' && currentRoute === '') || (rt.path === '/farmer/dashboard' && currentRoute === '/farmer');
+                      return (
+                        <button
+                          key={rt.path}
+                          onClick={() => onNavigate(rt.path)}
+                          title={`Navigate to ${rt.path}`}
+                          style={{
+                            textAlign: 'left',
+                            fontSize: '0.76rem',
+                            padding: '0.32rem 0.55rem',
+                            borderRadius: '4px',
+                            color: isActive ? '#FFFFFF' : '#A0B5AC',
+                            backgroundColor: isActive ? '#16533F' : 'transparent',
+                            border: isActive ? '1px solid #92DEB9' : '1px solid transparent',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            cursor: 'pointer',
+                            fontWeight: isActive ? 700 : 500,
+                            transition: 'all 0.1s ease',
+                            width: '100%',
+                            boxSizing: 'border-box'
+                          }}
+                          onMouseEnter={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.backgroundColor = 'rgba(22, 83, 63, 0.4)';
+                              e.currentTarget.style.color = '#FFFFFF';
+                            }
+                          }}
+                          onMouseLeave={(e) => {
+                            if (!isActive) {
+                              e.currentTarget.style.backgroundColor = 'transparent';
+                              e.currentTarget.style.color = '#A0B5AC';
+                            }
+                          }}
+                        >
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', paddingRight: '4px' }}>
+                            {rt.label}
+                          </span>
+                          {isActive && <CheckCircle size={12} style={{ color: '#92DEB9', flexShrink: 0 }} />}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               ))}
