@@ -50,17 +50,14 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
       ]
     },
     {
-      group: 'Auth & Verification',
+      group: 'Auth & Verification (Consolidated)',
       routes: [
-        { path: '/login', label: '21 /login Role-aware Sign In' },
-        { path: '/register', label: '17 /register Role Selection' },
-        { path: '/register/buyer', label: '18 /register/buyer Form' },
-        { path: '/register/farmer', label: '19 /register/farmer Form' },
-        { path: '/verify-contact', label: '20 /verify-contact OTP Demo' },
-        { path: '/forgot-password', label: '22 /forgot-password Request' },
-        { path: '/farmer/onboarding', label: '24 /farmer/onboarding Wizard' },
-        { path: '/farmer/verification', label: '25 /farmer/verification Evidence' },
-        { path: '/farmer/verification/status', label: '26 /farmer/verification/status' }
+        { path: '/login', label: '21 /login Unified Demo Sign In & Recovery' },
+        { path: '/register', label: '17 /register Unified Buyer & Farmer Registration' },
+        { path: '/register/buyer', label: '18 /register/buyer (Pre-selected Buyer)' },
+        { path: '/register/farmer', label: '19 /register/farmer (Pre-selected Farmer)' },
+        { path: '/verify-contact', label: '20 /verify-contact (Simulated 6-digit OTP)' },
+        { path: '/forgot-password', label: '22 /forgot-password (Simulated Modal)' }
       ]
     },
     {
@@ -71,31 +68,27 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
         { path: '/checkout/delivery', label: '29 /checkout/delivery Freight' },
         { path: '/checkout/payment', label: '30 /checkout/payment Gateways' },
         { path: '/checkout/review', label: '31 /checkout/review Final Review' },
-        { path: '/orders/ORD-2026-8842/confirmation', label: '32 /orders/:id/confirmation' },
+        { path: '/orders/ORD-2026-8842/confirmation', label: '32 /orders/:id/confirmation (Dynamic)' },
         { path: '/buyer/dashboard', label: '33 /buyer/dashboard Member Overview' },
         { path: '/buyer/orders', label: '34 /buyer/orders Active & History' },
-        { path: '/buyer/orders/ORD-2026-8842/tracking', label: '36 /buyer/orders/:id/tracking' },
-        { path: '/buyer/orders/ORD-2026-8842/invoice', label: '37 /buyer/orders/:id/invoice Print' },
-        { path: '/buyer/orders/ORD-2026-8842/issue', label: '38 /buyer/orders/:id/issue Dispute' },
-        { path: '/buyer/reviews', label: '40 /buyer/reviews Verified Reviews' },
-        { path: '/buyer/quotes', label: '42 /buyer/quotes Bulk Bids' },
-        { path: '/buyer/messages', label: 'Buyer Messages (Chat with Seller Inbox)' },
-        { path: '/buyer/transactions', label: '45 /buyer/transactions Ledger' },
+        { path: '/buyer/orders/ORD-2026-8842/tracking', label: '36 /buyer/orders/:id/tracking (Dynamic)' },
+        { path: '/buyer/orders/ORD-2026-8842/invoice', label: '37 /buyer/orders/:id/invoice Print (Dynamic)' },
+        { path: '/buyer/orders/ORD-2026-8842/issue', label: '38 /buyer/orders/:id/issue Dispute (Dynamic)' },
+        { path: '/buyer/messages', label: 'Buyer Messages (Direct Seller Chat)' },
         { path: '/buyer/profile', label: '49 /buyer/profile Addresses & Settings' }
       ]
     },
     {
-      group: 'Farmer Operations (Redesigned)',
+      group: 'Farmer Operations (Consolidated 6 Destinations)',
       routes: [
-        { path: '/farmer/dashboard', label: 'Farmer Dashboard (FRONT PAGE FARMER)' },
-        { path: '/farmer/inventory', label: 'My Crops & Stock (My Crops · Pananim)' },
-        { path: '/farmer/inventory/new', label: 'List New Harvest (List New Crop)' },
-        { path: '/farmer/crops/crop-001', label: 'Crop Details (Crop Details · Pananim)' },
-        { path: '/farmer/orders', label: 'Wholesale Sales (Farmer Sales · Pananim)' },
-        { path: '/farmer/settlements', label: 'Farmer Wallet (Farmer Wallet · Pananim)' },
-        { path: '/farmer/messages', label: 'Messages Inbox (Farmer Messages · Pananim)' },
-        { path: '/farmer/verification', label: 'RSBSA Verification (Farmer Verification)' },
-        { path: '/farmer/storefront', label: 'Farm Info Profile (Farmer Info · Pananim)' }
+        { path: '/farmer/dashboard', label: '1. Dashboard (Overview)' },
+        { path: '/farmer/inventory', label: '2. My Crops & Stock (Contextual Listings)' },
+        { path: '/farmer/inventory/new', label: '➕ Contextual Harvest Listing Form' },
+        { path: '/farmer/crops/crop-001', label: '🔍 Crop Details & Stock Modal' },
+        { path: '/farmer/orders', label: '3. Orders & Sales (Status Tabs)' },
+        { path: '/farmer/settlements', label: '4. Wallet, Settlements & Ledger' },
+        { path: '/farmer/messages', label: '5. Direct Buyer Inquiries & Messages' },
+        { path: '/farmer/account', label: '6. Account: Farm Profile, Storefront & RSBSA' }
       ]
     },
     {

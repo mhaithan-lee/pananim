@@ -50,8 +50,11 @@ export const FarmerNavbar: React.FC<FarmerNavbarProps> = ({
       badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined,
       match: (r: string) => r.startsWith('/farmer/messages') 
     },
-    { label: 'VERIFICATION', route: '/farmer/verification', match: (r: string) => r.startsWith('/farmer/verification') },
-    { label: 'FARM INFO', route: '/farmer/storefront', match: (r: string) => r.startsWith('/farmer/storefront') || r.startsWith('/farmer/profile') }
+    { 
+      label: 'ACCOUNT', 
+      route: '/farmer/account', 
+      match: (r: string) => r.startsWith('/farmer/account') || r.startsWith('/farmer/verification') || r.startsWith('/farmer/storefront') || r.startsWith('/farmer/profile') 
+    }
   ];
 
   const farmerName = currentUser?.name || 'Ramon Santos';

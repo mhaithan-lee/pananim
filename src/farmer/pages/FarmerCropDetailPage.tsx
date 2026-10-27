@@ -32,10 +32,27 @@ export const FarmerCropDetailPage: React.FC<FarmerCropDetailPageProps> = ({
   onNavigate,
   onUpdateCropStock
 }) => {
-  const crop = cropListings.find(c => c.id === cropId) || cropListings[0];
-  const farm = farms.find(f => f.id === crop.farmId) || farms[0];
+  const crop = cropListings.find(c => c.id === cropId);
+  const farm = crop ? (farms.find(f => f.id === crop.farmId) || farms[0]) : null;
   const [copiedToast, setCopiedToast] = useState(false);
   const [stockModalOpen, setStockModalOpen] = useState(false);
+
+  if (!crop || !farm) {
+    return (
+      <div style={{ padding: '4rem 1rem', textAlign: 'center' }}>
+        <div className="farmer-card" style={{ maxWidth: '500px', margin: '0 auto', padding: '3rem 2rem' }}>
+          <div style={{ fontSize: '3.5rem', marginBottom: '1rem' }}>🌱</div>
+          <h2 style={{ fontSize: '1.6rem', color: '#0C3C2C', marginBottom: '0.5rem' }}>Crop Listing Not Found</h2>
+          <p style={{ color: '#5E6E64', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+            The crop listing {cropId ? `"${cropId}"` : 'requested'} does not exist in your farm inventory.
+          </p>
+          <button onClick={() => onNavigate('/farmer/inventory')} className="farmer-btn-primary">
+            Return to My Crops
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const handleCopyLink = () => {
     navigator.clipboard?.writeText(window.location.href);

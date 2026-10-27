@@ -32,10 +32,9 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
 }) => {
   const marketplaceNav = [
     { label: 'Overview', route: '/admin', icon: LayoutGrid, match: (r: string) => r === '/admin' || r === '/admin/overview' || r === '/admin/dashboard' },
+    { label: 'User management', route: '/admin/users', icon: Users, badge: pendingUsersCount, match: (r: string) => r.startsWith('/admin/users') || r.startsWith('/admin/farmers') || r.startsWith('/admin/verifications') },
     { label: 'Crop listings', route: '/admin/crops', icon: Sprout, badge: pendingListingsCount, match: (r: string) => r.startsWith('/admin/crops') },
-    { label: 'Farmers & buyers', route: '/admin/farmers', icon: Users, badge: pendingUsersCount, match: (r: string) => r.startsWith('/admin/farmers') || r.startsWith('/admin/users') },
-    { label: 'Transactions', route: '/admin/transactions', icon: Receipt, match: (r: string) => r.startsWith('/admin/transactions') },
-    { label: 'Logistics', route: '/admin/logistics', icon: Truck, match: (r: string) => r.startsWith('/admin/logistics') },
+    { label: 'Transactions', route: '/admin/transactions', icon: Receipt, match: (r: string) => r.startsWith('/admin/transactions') || r.startsWith('/admin/finance') || r.startsWith('/admin/logistics') },
     { label: 'Market prices', route: '/admin/market-prices', icon: TrendingUp, match: (r: string) => r.startsWith('/admin/market-prices') },
     { label: 'Reports & disputes', route: '/admin/reports', icon: AlertCircle, badge: openDisputesCount, match: (r: string) => r.startsWith('/admin/reports') || r.startsWith('/admin/disputes') },
   ];

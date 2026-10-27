@@ -40,6 +40,7 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 import { BuyerOrdersPage } from './pages/BuyerOrdersPage';
 import { BuyerProfilePage } from './pages/BuyerProfilePage';
+
 // Redesigned Farmer Workspace Components (from /farmer PNG references)
 import { FarmerLayout } from './farmer/FarmerLayout';
 import { FarmerDashboardPage } from './farmer/pages/FarmerDashboardPage';
@@ -48,9 +49,8 @@ import { FarmerCropDetailPage } from './farmer/pages/FarmerCropDetailPage';
 import { FarmerOrdersPage } from './farmer/pages/FarmerOrdersPage';
 import { FarmerWalletPage } from './farmer/pages/FarmerWalletPage';
 import { FarmerMessagesPage } from './farmer/pages/FarmerMessagesPage';
-import { FarmerVerificationPage } from './farmer/pages/FarmerVerificationPage';
-import { FarmerInfoPage } from './farmer/pages/FarmerInfoPage';
 import { FarmerNewListingPage } from './farmer/pages/FarmerNewListingPage';
+import { FarmerAccountPage } from './farmer/pages/FarmerAccountPage';
 
 // Redesigned Admin Console Components (from /admin PNG references)
 import { AdminLayout } from './admin/AdminLayout';
@@ -63,6 +63,7 @@ import { AdminMarketPricesPage } from './admin/pages/AdminMarketPricesPage';
 import { AdminAuditLogPage } from './admin/pages/AdminAuditLogPage';
 import { AdminSettingsPage } from './admin/pages/AdminSettingsPage';
 import { AdminLoginPage } from './admin/pages/AdminLoginPage';
+
 import { 
   InvoicePage, 
   OrderTrackingPage, 
@@ -90,15 +91,38 @@ import {
   NotFoundPage, 
   ForbiddenPage, 
   ServiceUnavailablePage, 
-  SessionExpiredPage 
+  SessionExpiredPage,
+  OrderNotFoundPage,
+  CropNotFoundPage
 } from './pages/ErrorPages';
 import { MessagesInboxPage } from './pages/MessagesInboxPage';
 
 export const App: React.FC = () => {
-  // Application State
-  const [currentRole, setCurrentRole] = useState<Role>('buyer');
-  const [currentUser, setCurrentUser] = useState<User | null>(currentUserBuyer);
-  const [currentRoute, setCurrentRoute] = useState<string>('/');
+  // Application State with Browser LocalStorage Session Persistence
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    try {
+      const stored = localStorage.getItem('pananim_demo_user');
+      if (stored) return JSON.parse(stored);
+    } catch (e) {
+      // Ignore private mode storage restrictions
+    }
+    return currentUserBuyer;
+  });
+
+  const [currentRole, setCurrentRole] = useState<Role>(() => {
+    try {
+      const stored = localStorage.getItem('pananim_demo_role');
+      if (stored === 'buyer' || stored === 'farmer' || stored === 'staff') return stored;
+    } catch (e) {
+      // Ignore
+    }
+    return 'buyer';
+  });
+
+  const [currentRoute, setCurrentRoute] = useState<string>(() => {
+    return window.location.pathname || '/';
+  });
+
   const [cropListings, setCropListings] = useState<CropListing[]>(mockCropListings);
   const [farms, setFarms] = useState<Farm[]>(mockFarms);
   const [orders, setOrders] = useState<OrderGroup[]>(mockOrders);
@@ -136,13 +160,28 @@ export const App: React.FC = () => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  // Sync demo session to localStorage on updates
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem('pananim_demo_user', JSON.stringify(currentUser));
+        localStorage.setItem('pananim_demo_role', currentRole);
+      } else {
+        localStorage.removeItem('pananim_demo_user');
+        localStorage.removeItem('pananim_demo_role');
+      }
+    } catch (e) {
+      // Ignore
+    }
+  }, [currentUser, currentRole]);
+
   const navigate = (route: string) => {
     setCurrentRoute(route);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     try {
       window.history.pushState(null, '', route);
     } catch (e) {
-      // Fallback in some iframe or file preview contexts
+      // Fallback
     }
   };
 
@@ -151,14 +190,43 @@ export const App: React.FC = () => {
     setCurrentRole(role);
     if (role === 'buyer') {
       setCurrentUser(currentUserBuyer);
+      try {
+        localStorage.setItem('pananim_demo_user', JSON.stringify(currentUserBuyer));
+        localStorage.setItem('pananim_demo_role', 'buyer');
+      } catch (e) {}
     } else if (role === 'farmer') {
       setCurrentUser(currentUserFarmer);
+      try {
+        localStorage.setItem('pananim_demo_user', JSON.stringify(currentUserFarmer));
+        localStorage.setItem('pananim_demo_role', 'farmer');
+      } catch (e) {}
     } else if (role === 'staff') {
       setCurrentUser(currentUserStaff);
+      try {
+        localStorage.setItem('pananim_demo_user', JSON.stringify(currentUserStaff));
+        localStorage.setItem('pananim_demo_role', 'staff');
+      } catch (e) {}
       navigate('/admin');
     } else {
-      setCurrentUser(null);
+      handleLogout();
     }
+  };
+
+  const handleLogout = () => {
+    try {
+      localStorage.removeItem('pananim_demo_user');
+      localStorage.removeItem('pananim_demo_role');
+    } catch (e) {}
+    setCurrentUser(null);
+    setCurrentRole('guest');
+    navigate('/');
+  };
+
+  // Tiered Price Calculator helper
+  const calculateTierPrice = (crop: CropListing, qty: number): number => {
+    if (!crop.priceTiers || crop.priceTiers.length === 0) return crop.pricePerUnit;
+    const applicable = [...crop.priceTiers].reverse().find(t => qty >= t.minQuantity);
+    return applicable ? applicable.pricePerUnit : crop.pricePerUnit;
   };
 
   // Worked Demo ₱950 calculation loader (Section 9 Prompt Spec)
@@ -191,28 +259,28 @@ export const App: React.FC = () => {
     navigate('/cart');
   };
 
-  // Add to cart
+  // Add to cart with correct volume tier pricing calculation
   const handleAddToCart = (crop: CropListing, quantity: number) => {
     const existing = cartItems.find(it => it.listingId === crop.id);
-    const activeTier = [...crop.priceTiers].reverse().find(t => quantity >= t.minQuantity) || crop.priceTiers[0];
-    const tierPrice = activeTier ? activeTier.pricePerUnit : crop.pricePerUnit;
 
     if (existing) {
       const newQty = existing.quantity + quantity;
+      const unitPrice = calculateTierPrice(crop, newQty);
       setCartItems(cartItems.map(it => it.id === existing.id ? {
         ...it,
         quantity: newQty,
-        selectedTierPrice: tierPrice,
-        subtotal: newQty * tierPrice
+        selectedTierPrice: unitPrice,
+        subtotal: newQty * unitPrice
       } : it));
     } else {
+      const unitPrice = calculateTierPrice(crop, quantity);
       const newItem: CartItem = {
         id: `cart-${Date.now()}`,
         listingId: crop.id,
         crop,
         quantity,
-        selectedTierPrice: tierPrice,
-        subtotal: quantity * tierPrice,
+        selectedTierPrice: unitPrice,
+        subtotal: quantity * unitPrice,
         fulfillmentType: 'delivery'
       };
       setCartItems([...cartItems, newItem]);
@@ -221,13 +289,16 @@ export const App: React.FC = () => {
     navigate('/cart');
   };
 
+  // Update quantity in cart with volume tier recalculation
   const handleUpdateQuantity = (itemId: string, newQty: number) => {
     setCartItems(cartItems.map(it => {
       if (it.id === itemId) {
+        const unitPrice = calculateTierPrice(it.crop, newQty);
         return {
           ...it,
           quantity: newQty,
-          subtotal: newQty * it.selectedTierPrice
+          selectedTierPrice: unitPrice,
+          subtotal: newQty * unitPrice
         };
       }
       return it;
@@ -278,9 +349,8 @@ export const App: React.FC = () => {
     }
   };
 
-  // Route Renderer
+  // Public & Buyer Route Renderer
   const renderRoute = () => {
-    // Exact or pattern matched routes
     if (currentRoute === '/') {
       return (
         <HomePage 
@@ -305,9 +375,13 @@ export const App: React.FC = () => {
       );
     }
 
+    // Dynamic Crop Lookup with fallback to CropNotFoundPage
     if (currentRoute.startsWith('/crops/')) {
-      const cropId = currentRoute.replace('/crops/', '');
-      const crop = cropListings.find(c => c.id === cropId) || cropListings[0];
+      const cropId = currentRoute.replace('/crops/', '').split('?')[0];
+      const crop = cropListings.find(c => c.id === cropId);
+      if (!crop) {
+        return <CropNotFoundPage cropId={cropId} onNavigate={navigate} />;
+      }
       const farm = farms.find(f => f.id === crop.farmId) || farms[0];
       return (
         <CropDetailPage 
@@ -381,8 +455,12 @@ export const App: React.FC = () => {
       );
     }
 
+    // Dynamic Order Confirmation Lookup
     if (currentRoute.startsWith('/orders/') && currentRoute.includes('/confirmation')) {
-      const order = orders[0];
+      const parts = currentRoute.split('/');
+      const orderId = parts[2];
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
+      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
       return <OrderConfirmationPage order={order} onNavigate={navigate} />;
     }
 
@@ -396,18 +474,30 @@ export const App: React.FC = () => {
       );
     }
 
+    // Dynamic Order Tracking Lookup
     if (currentRoute.startsWith('/buyer/orders/') && currentRoute.includes('/tracking')) {
-      const order = orders[0];
+      const parts = currentRoute.split('/');
+      const orderId = parts[3];
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
+      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
       return <OrderTrackingPage order={order} onNavigate={navigate} />;
     }
 
+    // Dynamic Order Invoice Lookup
     if (currentRoute.startsWith('/buyer/orders/') && currentRoute.includes('/invoice')) {
-      const order = orders[0];
+      const parts = currentRoute.split('/');
+      const orderId = parts[3];
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
+      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
       return <InvoicePage order={order} onNavigate={navigate} />;
     }
 
+    // Dynamic Order Issue Dispute Lookup
     if (currentRoute.startsWith('/buyer/orders/') && currentRoute.includes('/issue')) {
-      const order = orders[0];
+      const parts = currentRoute.split('/');
+      const orderId = parts[3];
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
+      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
       return <IssueReportPage order={order} onNavigate={navigate} />;
     }
 
@@ -435,19 +525,6 @@ export const App: React.FC = () => {
       return <MessagesInboxPage isFarmer={false} onNavigate={navigate} />;
     }
 
-    if (currentRoute.startsWith('/staff/verifications')) {
-      return (
-        <AdminFarmersBuyersPage 
-          farms={farms} 
-          applications={applications} 
-          onNavigate={navigate} 
-          onUpdateFarm={(updatedFarm) => {
-            setFarms(farms.map(f => f.id === updatedFarm.id ? updatedFarm : f));
-          }}
-        />
-      );
-    }
-
     // Informational pages
     if (currentRoute === '/how-it-works') return <HowItWorksPage onNavigate={navigate} />;
     if (currentRoute === '/sell-with-pananim') return <SellWithPananimPage onNavigate={navigate} />;
@@ -457,13 +534,60 @@ export const App: React.FC = () => {
     if (currentRoute === '/contact') return <ContactPage onNavigate={navigate} />;
     if (currentRoute.startsWith('/policies')) return <PoliciesPage onNavigate={navigate} />;
 
-    // Auth pages
-    if (currentRoute === '/login') return <LoginPage onNavigate={navigate} onLoginSuccess={(u) => { setCurrentUser(u); setCurrentRole('buyer'); }} />;
-    if (currentRoute === '/register') return <RegisterPage onNavigate={navigate} />;
-    if (currentRoute === '/register/buyer') return <BuyerRegisterPage onNavigate={navigate} />;
-    if (currentRoute === '/register/farmer') return <FarmerVerificationPage currentUser={currentUser} onNavigate={navigate} onSubmitApplication={(app) => setApplications([app, ...applications])} />;
-    if (currentRoute === '/verify-contact') return <VerifyContactPage onNavigate={navigate} />;
-    if (currentRoute === '/forgot-password') return <LoginPage onNavigate={navigate} onLoginSuccess={(u) => { setCurrentUser(u); setCurrentRole('buyer'); }} />;
+    // Auth pages (Unified Login & Unified Registration)
+    if (currentRoute === '/login' || currentRoute === '/forgot-password') {
+      return (
+        <LoginPage 
+          onNavigate={navigate} 
+          onLoginSuccess={(u) => { 
+            setCurrentUser(u); 
+            setCurrentRole(u.role); 
+          }} 
+        />
+      );
+    }
+    
+    if (currentRoute === '/register') {
+      return (
+        <RegisterPage 
+          onNavigate={navigate} 
+          onLoginSuccess={(u) => { 
+            setCurrentUser(u); 
+            setCurrentRole(u.role); 
+          }} 
+        />
+      );
+    }
+
+    if (currentRoute === '/register/buyer') {
+      return (
+        <RegisterPage 
+          initialRole="buyer"
+          onNavigate={navigate} 
+          onLoginSuccess={(u) => { 
+            setCurrentUser(u); 
+            setCurrentRole('buyer'); 
+          }} 
+        />
+      );
+    }
+
+    if (currentRoute === '/register/farmer') {
+      return (
+        <RegisterPage 
+          initialRole="farmer"
+          onNavigate={navigate} 
+          onLoginSuccess={(u) => { 
+            setCurrentUser(u); 
+            setCurrentRole('farmer'); 
+          }} 
+        />
+      );
+    }
+
+    if (currentRoute === '/verify-contact') {
+      return <VerifyContactPage onNavigate={navigate} />;
+    }
 
     // Error pages
     if (currentRoute === '/403') return <ForbiddenPage onNavigate={navigate} />;
@@ -473,7 +597,7 @@ export const App: React.FC = () => {
     return <NotFoundPage onNavigate={navigate} />;
   };
 
-  // Redesigned Farmer Route Renderer strictly utilizing PNG reference screens from /farmer
+  // Farmer Route Renderer (Consolidated to canonical 6 destinations)
   const renderFarmerRoute = () => {
     if (currentRoute === '/farmer' || currentRoute === '/farmer/dashboard') {
       return (
@@ -544,40 +668,33 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/farmer/verification')) {
-      return (
-        <FarmerVerificationPage 
-          currentUser={currentUser} 
-          onNavigate={navigate} 
-          onSubmitApplication={(app) => setApplications([app, ...applications])}
-        />
-      );
-    }
+    // Consolidated Farmer Account (Profile, Storefront, RSBSA Verification)
+    if (
+      currentRoute.startsWith('/farmer/account') || 
+      currentRoute.startsWith('/farmer/verification') || 
+      currentRoute.startsWith('/farmer/storefront') || 
+      currentRoute.startsWith('/farmer/profile')
+    ) {
+      let initialTab: 'profile' | 'storefront' | 'verification' = 'profile';
+      if (currentRoute.includes('verification')) initialTab = 'verification';
+      if (currentRoute.includes('storefront')) initialTab = 'storefront';
 
-    if (currentRoute === '/farmer/storefront' || currentRoute === '/farmer/profile') {
       return (
-        <FarmerInfoPage 
+        <FarmerAccountPage 
           farm={farms[0]} 
           currentUser={currentUser} 
           onNavigate={navigate} 
+          onSubmitApplication={(app) => setApplications([app, ...applications])}
+          initialTab={initialTab}
         />
       );
     }
 
-    // Default fallback
-    return (
-      <FarmerDashboardPage 
-        cropListings={cropListings} 
-        farms={farms} 
-        orders={orders} 
-        applications={applications} 
-        onNavigate={navigate} 
-        onUpdateCropStock={handleUpdateCropStock}
-      />
-    );
+    // Unknown farmer route -> proper Not Found state (Requirement 7.3)
+    return <NotFoundPage onNavigate={navigate} />;
   };
 
-  // Redesigned Admin Route Renderer strictly utilizing PNG reference screens from /admin
+  // Admin Route Renderer (Consolidated to canonical 8 destinations)
   const renderAdminRoute = () => {
     if (currentRoute === '/admin' || currentRoute === '/admin/overview' || currentRoute === '/admin/dashboard' || currentRoute === '/staff') {
       return (
@@ -603,7 +720,14 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/admin/farmers') || currentRoute.startsWith('/admin/users') || currentRoute.startsWith('/admin/verifications') || currentRoute.startsWith('/staff/verifications')) {
+    // Consolidated User Management (Farmers, Buyers, Users, Verifications)
+    if (
+      currentRoute.startsWith('/admin/users') || 
+      currentRoute.startsWith('/admin/farmers') || 
+      currentRoute.startsWith('/admin/buyers') || 
+      currentRoute.startsWith('/admin/verifications') || 
+      currentRoute.startsWith('/staff/verifications')
+    ) {
       return (
         <AdminFarmersBuyersPage 
           farms={farms} 
@@ -616,7 +740,12 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/admin/transactions') || currentRoute.startsWith('/admin/finance')) {
+    // Consolidated Transactions & Logistics & Finance
+    if (
+      currentRoute.startsWith('/admin/transactions') || 
+      currentRoute.startsWith('/admin/finance') ||
+      currentRoute.startsWith('/admin/logistics')
+    ) {
       return (
         <AdminTransactionsPage 
           orders={orders} 
@@ -649,18 +778,8 @@ export const App: React.FC = () => {
       );
     }
 
-    // Default fallback to Admin Overview
-    return (
-      <AdminOverviewPage 
-        cropListings={cropListings} 
-        farms={farms} 
-        orders={orders} 
-        applications={applications} 
-        onNavigate={navigate} 
-        onUpdateCropStock={handleUpdateCropStock}
-        onUpdateApplicationStatus={handleUpdateApplicationStatus}
-      />
-    );
+    // Unknown admin route -> proper Not Found state (Requirement 7.3)
+    return <NotFoundPage onNavigate={navigate} />;
   };
 
   const isAdminRoute = currentRoute.startsWith('/admin') || currentRoute.startsWith('/staff') || (currentRole === 'staff' && (currentRoute === '/' || currentRoute === '/admin'));
@@ -680,7 +799,10 @@ export const App: React.FC = () => {
 
         {currentRoute === '/admin/login' ? (
           <AdminLoginPage 
-            onLoginSuccess={(u) => { setCurrentUser(u); setCurrentRole('staff'); }} 
+            onLoginSuccess={(u) => { 
+              setCurrentUser(u); 
+              setCurrentRole('staff'); 
+            }} 
             onNavigate={navigate} 
           />
         ) : isAdminRoute ? (
@@ -691,7 +813,7 @@ export const App: React.FC = () => {
             pendingVerificationsCount={applications.filter(a => a.status === 'submitted' || a.status === 'under_review').length}
             unreadMessagesCount={3}
             onSwitchRole={handleSwitchRole}
-            onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
+            onLogout={handleLogout}
           >
             {renderAdminRoute()}
           </AdminLayout>
@@ -702,7 +824,7 @@ export const App: React.FC = () => {
             currentUser={currentUser}
             unreadMessagesCount={3}
             onSwitchRole={handleSwitchRole}
-            onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
+            onLogout={handleLogout}
             showHero={currentRoute === '/farmer' || currentRoute === '/farmer/dashboard'}
           >
             {renderFarmerRoute()}
@@ -716,7 +838,7 @@ export const App: React.FC = () => {
               currentUser={currentUser} 
               currentRole={currentRole} 
               cartCount={cartItems.length} 
-              onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
+              onLogout={handleLogout}
             />
 
             {/* Main Page Body */}
