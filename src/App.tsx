@@ -40,12 +40,29 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 import { BuyerOrdersPage } from './pages/BuyerOrdersPage';
 import { BuyerProfilePage } from './pages/BuyerProfilePage';
-import { FarmerDashboardPage } from './pages/FarmerDashboardPage';
-import { FarmerOrdersPage } from './pages/FarmerOrdersPage';
-import { FarmerSettlementsPage } from './pages/FarmerSettlementsPage';
-import { NewListingPage } from './pages/NewListingPage';
-import { FarmerVerificationPage } from './pages/FarmerVerificationPage';
-import { StaffVerificationsPage } from './pages/StaffVerificationsPage';
+// Redesigned Farmer Workspace Components (from /farmer PNG references)
+import { FarmerLayout } from './farmer/FarmerLayout';
+import { FarmerDashboardPage } from './farmer/pages/FarmerDashboardPage';
+import { FarmerCropsPage } from './farmer/pages/FarmerCropsPage';
+import { FarmerCropDetailPage } from './farmer/pages/FarmerCropDetailPage';
+import { FarmerOrdersPage } from './farmer/pages/FarmerOrdersPage';
+import { FarmerWalletPage } from './farmer/pages/FarmerWalletPage';
+import { FarmerMessagesPage } from './farmer/pages/FarmerMessagesPage';
+import { FarmerVerificationPage } from './farmer/pages/FarmerVerificationPage';
+import { FarmerInfoPage } from './farmer/pages/FarmerInfoPage';
+import { FarmerNewListingPage } from './farmer/pages/FarmerNewListingPage';
+
+// Redesigned Admin Console Components (from /admin PNG references)
+import { AdminLayout } from './admin/AdminLayout';
+import { AdminOverviewPage } from './admin/pages/AdminOverviewPage';
+import { AdminCropListingsPage } from './admin/pages/AdminCropListingsPage';
+import { AdminFarmersBuyersPage } from './admin/pages/AdminFarmersBuyersPage';
+import { AdminTransactionsPage } from './admin/pages/AdminTransactionsPage';
+import { AdminDisputesPage } from './admin/pages/AdminDisputesPage';
+import { AdminMarketPricesPage } from './admin/pages/AdminMarketPricesPage';
+import { AdminAuditLogPage } from './admin/pages/AdminAuditLogPage';
+import { AdminSettingsPage } from './admin/pages/AdminSettingsPage';
+import { AdminLoginPage } from './admin/pages/AdminLoginPage';
 import { 
   InvoicePage, 
   OrderTrackingPage, 
@@ -138,6 +155,7 @@ export const App: React.FC = () => {
       setCurrentUser(currentUserFarmer);
     } else if (role === 'staff') {
       setCurrentUser(currentUserStaff);
+      navigate('/admin');
     } else {
       setCurrentUser(null);
     }
@@ -397,55 +415,16 @@ export const App: React.FC = () => {
       return <BuyerProfilePage currentUser={currentUser} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/farmer/dashboard' || currentRoute === '/farmer/inventory') {
-      return (
-        <FarmerDashboardPage 
-          farmer={farms[0]} 
-          cropListings={cropListings} 
-          orders={orders} 
-          onNavigate={navigate} 
-          onUpdateCropStock={handleUpdateCropStock}
-        />
-      );
-    }
-
-    if (currentRoute === '/farmer/orders') {
-      return (
-        <FarmerOrdersPage 
-          orders={orders} 
-          farmer={farms[0]} 
-          onNavigate={navigate} 
-        />
-      );
-    }
-
-    if (currentRoute === '/farmer/settlements' || currentRoute === '/farmer/transactions') {
-      return (
-        <FarmerSettlementsPage 
-          farmer={farms[0]} 
-          onNavigate={navigate} 
-        />
-      );
-    }
-
-    if (currentRoute === '/farmer/quotes') {
-      return <QuotesPage isFarmer={true} onNavigate={navigate} />;
+    if (currentRoute.startsWith('/farmer')) {
+      return renderFarmerRoute();
     }
 
     if (currentRoute === '/buyer/quotes') {
       return <QuotesPage isFarmer={false} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/farmer/reviews') {
-      return <ReviewsHubPage isFarmer={true} onNavigate={navigate} />;
-    }
-
     if (currentRoute === '/buyer/reviews') {
       return <ReviewsHubPage isFarmer={false} onNavigate={navigate} />;
-    }
-
-    if (currentRoute === '/farmer/deliveries') {
-      return <DeliveriesTrackingHubPage isFarmer={true} onNavigate={navigate} />;
     }
 
     if (currentRoute === '/buyer/deliveries') {
@@ -456,47 +435,15 @@ export const App: React.FC = () => {
       return <MessagesInboxPage isFarmer={false} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/farmer/messages') {
-      return <MessagesInboxPage isFarmer={true} onNavigate={navigate} />;
-    }
-
-    if (currentRoute === '/farmer/storefront') {
-      return (
-        <FarmerStorefrontPage 
-          farm={farms[0]} 
-          listings={cropListings} 
-          onNavigate={navigate} 
-          onAddToCart={handleAddToCart} 
-        />
-      );
-    }
-
-    if (currentRoute === '/farmer/inventory/new') {
-      return (
-        <NewListingPage 
-          farmer={farms[0]} 
-          onNavigate={navigate} 
-          onAddListing={handleAddListing} 
-        />
-      );
-    }
-
-    if (currentRoute.startsWith('/farmer/verification')) {
-      return (
-        <FarmerVerificationPage 
-          currentUser={currentUser} 
-          onNavigate={navigate} 
-          onSubmitApplication={(app) => setApplications([app, ...applications])}
-        />
-      );
-    }
-
     if (currentRoute.startsWith('/staff/verifications')) {
       return (
-        <StaffVerificationsPage 
+        <AdminFarmersBuyersPage 
+          farms={farms} 
           applications={applications} 
           onNavigate={navigate} 
-          onUpdateApplicationStatus={handleUpdateApplicationStatus}
+          onUpdateFarm={(updatedFarm) => {
+            setFarms(farms.map(f => f.id === updatedFarm.id ? updatedFarm : f));
+          }}
         />
       );
     }
@@ -526,6 +473,199 @@ export const App: React.FC = () => {
     return <NotFoundPage onNavigate={navigate} />;
   };
 
+  // Redesigned Farmer Route Renderer strictly utilizing PNG reference screens from /farmer
+  const renderFarmerRoute = () => {
+    if (currentRoute === '/farmer' || currentRoute === '/farmer/dashboard') {
+      return (
+        <FarmerDashboardPage 
+          cropListings={cropListings} 
+          farms={farms} 
+          orders={orders} 
+          applications={applications} 
+          onNavigate={navigate} 
+          onUpdateCropStock={handleUpdateCropStock}
+        />
+      );
+    }
+
+    if (currentRoute === '/farmer/inventory' || currentRoute === '/farmer/crops') {
+      return (
+        <FarmerCropsPage 
+          crops={cropListings} 
+          onNavigate={navigate} 
+          onUpdateCropStock={handleUpdateCropStock} 
+        />
+      );
+    }
+
+    if (currentRoute.startsWith('/farmer/crops/')) {
+      const cropId = currentRoute.replace('/farmer/crops/', '');
+      return (
+        <FarmerCropDetailPage 
+          cropId={cropId} 
+          cropListings={cropListings} 
+          farms={farms} 
+          reviews={reviews} 
+          onNavigate={navigate}
+          onUpdateCropStock={handleUpdateCropStock}
+        />
+      );
+    }
+
+    if (currentRoute === '/farmer/inventory/new') {
+      return (
+        <FarmerNewListingPage 
+          farmer={farms[0]} 
+          onNavigate={navigate} 
+          onAddListing={handleAddListing} 
+        />
+      );
+    }
+
+    if (currentRoute === '/farmer/orders' || currentRoute === '/farmer/sales') {
+      return (
+        <FarmerOrdersPage 
+          orders={orders} 
+          cropListings={cropListings} 
+          onNavigate={navigate} 
+        />
+      );
+    }
+
+    if (currentRoute === '/farmer/settlements' || currentRoute === '/farmer/wallet' || currentRoute === '/farmer/transactions') {
+      return (
+        <FarmerWalletPage onNavigate={navigate} />
+      );
+    }
+
+    if (currentRoute === '/farmer/messages') {
+      return (
+        <FarmerMessagesPage onNavigate={navigate} />
+      );
+    }
+
+    if (currentRoute.startsWith('/farmer/verification')) {
+      return (
+        <FarmerVerificationPage 
+          currentUser={currentUser} 
+          onNavigate={navigate} 
+          onSubmitApplication={(app) => setApplications([app, ...applications])}
+        />
+      );
+    }
+
+    if (currentRoute === '/farmer/storefront' || currentRoute === '/farmer/profile') {
+      return (
+        <FarmerInfoPage 
+          farm={farms[0]} 
+          currentUser={currentUser} 
+          onNavigate={navigate} 
+        />
+      );
+    }
+
+    // Default fallback
+    return (
+      <FarmerDashboardPage 
+        cropListings={cropListings} 
+        farms={farms} 
+        orders={orders} 
+        applications={applications} 
+        onNavigate={navigate} 
+        onUpdateCropStock={handleUpdateCropStock}
+      />
+    );
+  };
+
+  // Redesigned Admin Route Renderer strictly utilizing PNG reference screens from /admin
+  const renderAdminRoute = () => {
+    if (currentRoute === '/admin' || currentRoute === '/admin/overview' || currentRoute === '/admin/dashboard' || currentRoute === '/staff') {
+      return (
+        <AdminOverviewPage 
+          cropListings={cropListings} 
+          farms={farms} 
+          orders={orders} 
+          applications={applications} 
+          onNavigate={navigate} 
+          onUpdateCropStock={handleUpdateCropStock}
+          onUpdateApplicationStatus={handleUpdateApplicationStatus}
+        />
+      );
+    }
+
+    if (currentRoute.startsWith('/admin/crops')) {
+      return (
+        <AdminCropListingsPage 
+          cropListings={cropListings} 
+          onNavigate={navigate} 
+          onUpdateCropStock={handleUpdateCropStock} 
+        />
+      );
+    }
+
+    if (currentRoute.startsWith('/admin/farmers') || currentRoute.startsWith('/admin/users') || currentRoute.startsWith('/admin/verifications') || currentRoute.startsWith('/staff/verifications')) {
+      return (
+        <AdminFarmersBuyersPage 
+          farms={farms} 
+          applications={applications} 
+          onNavigate={navigate} 
+          onUpdateFarm={(updatedFarm) => {
+            setFarms(farms.map(f => f.id === updatedFarm.id ? updatedFarm : f));
+          }}
+        />
+      );
+    }
+
+    if (currentRoute.startsWith('/admin/transactions') || currentRoute.startsWith('/admin/finance')) {
+      return (
+        <AdminTransactionsPage 
+          orders={orders} 
+          onNavigate={navigate} 
+        />
+      );
+    }
+
+    if (currentRoute.startsWith('/admin/market-prices')) {
+      return (
+        <AdminMarketPricesPage onNavigate={navigate} />
+      );
+    }
+
+    if (currentRoute.startsWith('/admin/reports') || currentRoute.startsWith('/admin/disputes')) {
+      return (
+        <AdminDisputesPage onNavigate={navigate} />
+      );
+    }
+
+    if (currentRoute.startsWith('/admin/audit-log')) {
+      return (
+        <AdminAuditLogPage onNavigate={navigate} />
+      );
+    }
+
+    if (currentRoute.startsWith('/admin/settings')) {
+      return (
+        <AdminSettingsPage onNavigate={navigate} />
+      );
+    }
+
+    // Default fallback to Admin Overview
+    return (
+      <AdminOverviewPage 
+        cropListings={cropListings} 
+        farms={farms} 
+        orders={orders} 
+        applications={applications} 
+        onNavigate={navigate} 
+        onUpdateCropStock={handleUpdateCropStock}
+        onUpdateApplicationStatus={handleUpdateApplicationStatus}
+      />
+    );
+  };
+
+  const isAdminRoute = currentRoute.startsWith('/admin') || currentRoute.startsWith('/staff') || (currentRole === 'staff' && (currentRoute === '/' || currentRoute === '/admin'));
+  const isFarmerRoute = currentRoute.startsWith('/farmer') || (currentRole === 'farmer' && (currentRoute === '/' || currentRoute === '/farmer'));
+
   return (
     <ChatProvider currentUser={currentUser} onNavigate={navigate} farms={farms}>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -538,32 +678,65 @@ export const App: React.FC = () => {
           onLoadWorkedExample950={handleLoadWorkedExample950}
         />
 
-        {/* Main Top Header Navbar matching Screenshot 215453 */}
-        <Navbar 
-          currentRoute={currentRoute} 
-          onNavigate={navigate} 
-          currentUser={currentUser} 
-          currentRole={currentRole} 
-          cartCount={cartItems.length} 
-          onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
-        />
+        {currentRoute === '/admin/login' ? (
+          <AdminLoginPage 
+            onLoginSuccess={(u) => { setCurrentUser(u); setCurrentRole('staff'); }} 
+            onNavigate={navigate} 
+          />
+        ) : isAdminRoute ? (
+          <AdminLayout
+            currentRoute={currentRoute}
+            onNavigate={navigate}
+            currentUser={currentUser}
+            pendingVerificationsCount={applications.filter(a => a.status === 'submitted' || a.status === 'under_review').length}
+            unreadMessagesCount={3}
+            onSwitchRole={handleSwitchRole}
+            onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
+          >
+            {renderAdminRoute()}
+          </AdminLayout>
+        ) : isFarmerRoute ? (
+          <FarmerLayout
+            currentRoute={currentRoute}
+            onNavigate={navigate}
+            currentUser={currentUser}
+            unreadMessagesCount={3}
+            onSwitchRole={handleSwitchRole}
+            onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
+            showHero={currentRoute === '/farmer' || currentRoute === '/farmer/dashboard'}
+          >
+            {renderFarmerRoute()}
+          </FarmerLayout>
+        ) : (
+          <>
+            {/* Main Top Header Navbar matching Screenshot 215453 */}
+            <Navbar 
+              currentRoute={currentRoute} 
+              onNavigate={navigate} 
+              currentUser={currentUser} 
+              currentRole={currentRole} 
+              cartCount={cartItems.length} 
+              onLogout={() => { setCurrentUser(null); setCurrentRole('guest'); navigate('/'); }}
+            />
 
-        {/* Main Page Body */}
-        <main style={{ flex: 1 }}>
-          {renderRoute()}
-        </main>
+            {/* Main Page Body */}
+            <main style={{ flex: 1 }}>
+              {renderRoute()}
+            </main>
 
-        {/* Global Chat with Seller Drawer / Fullscreen Mobile View */}
-        <ChatDrawer 
-          onNavigate={navigate} 
-          onLoginAsBuyer={() => {
-            setCurrentUser(currentUserBuyer);
-            setCurrentRole('buyer');
-          }}
-        />
+            {/* Global Chat with Seller Drawer / Fullscreen Mobile View */}
+            <ChatDrawer 
+              onNavigate={navigate} 
+              onLoginAsBuyer={() => {
+                setCurrentUser(currentUserBuyer);
+                setCurrentRole('buyer');
+              }}
+            />
 
-        {/* Brand Footer matching Screenshot 215453 */}
-        <Footer onNavigate={navigate} />
+            {/* Brand Footer matching Screenshot 215453 */}
+            <Footer onNavigate={navigate} />
+          </>
+        )}
       </div>
     </ChatProvider>
   );

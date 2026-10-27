@@ -424,10 +424,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                     {currentRole === 'staff' && (
                       <button
-                        onClick={() => { onNavigate('/staff/verifications'); setUserDropdownOpen(false); }}
-                        style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        onClick={() => { onNavigate('/admin'); setUserDropdownOpen(false); }}
+                        style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
                       >
-                        🛡️ Staff Verification Queue
+                        🛡️ Admin Console &amp; Compliance
                       </button>
                     )}
 

@@ -85,25 +85,31 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
       ]
     },
     {
-      group: 'Farmer Operations',
+      group: 'Farmer Operations (Redesigned)',
       routes: [
-        { path: '/farmer/dashboard', label: '53 /farmer/dashboard Sales & Alerts' },
-        { path: '/farmer/inventory', label: '54 /farmer/inventory Stock & Batches' },
-        { path: '/farmer/inventory/new', label: '55 /farmer/inventory/new Listing' },
-        { path: '/farmer/orders', label: '58 /farmer/orders Incoming Wholesale' },
-        { path: '/farmer/quotes', label: '60 /farmer/quotes Bids & Counter' },
-        { path: '/farmer/messages', label: 'Farmer Messages (Buyer Inquiries Inbox)' },
-        { path: '/farmer/transactions', label: '62 /farmer/transactions Sales Ledger' },
-        { path: '/farmer/settlements', label: '63 /farmer/settlements Net Payout' },
-        { path: '/farmer/deliveries', label: '64 /farmer/deliveries Transport' },
-        { path: '/farmer/storefront', label: '70 /farmer/storefront Profile Edit' }
+        { path: '/farmer/dashboard', label: 'Farmer Dashboard (FRONT PAGE FARMER)' },
+        { path: '/farmer/inventory', label: 'My Crops & Stock (My Crops · Pananim)' },
+        { path: '/farmer/inventory/new', label: 'List New Harvest (List New Crop)' },
+        { path: '/farmer/crops/crop-001', label: 'Crop Details (Crop Details · Pananim)' },
+        { path: '/farmer/orders', label: 'Wholesale Sales (Farmer Sales · Pananim)' },
+        { path: '/farmer/settlements', label: 'Farmer Wallet (Farmer Wallet · Pananim)' },
+        { path: '/farmer/messages', label: 'Messages Inbox (Farmer Messages · Pananim)' },
+        { path: '/farmer/verification', label: 'RSBSA Verification (Farmer Verification)' },
+        { path: '/farmer/storefront', label: 'Farm Info Profile (Farmer Info · Pananim)' }
       ]
     },
     {
-      group: 'Staff & System States',
+      group: 'Admin Experience (Redesigned)',
       routes: [
-        { path: '/staff/verifications', label: '76 /staff/verifications Queue' },
-        { path: '/staff/verifications/VER-2026-0041', label: '77 /staff/verifications/:id Review' },
+        { path: '/admin', label: 'Admin Overview (Pananim admin overview)' },
+        { path: '/admin/crops', label: 'Crop Listings (Pananim crop listings)' },
+        { path: '/admin/farmers', label: 'Farmers & Buyers (Pananim farmers & buyers)' },
+        { path: '/admin/transactions', label: 'Transactions (Pananim transactions)' },
+        { path: '/admin/market-prices', label: 'Market Prices (Pananim market prices)' },
+        { path: '/admin/reports', label: 'Reports & Disputes (Pananim reports & disputes)' },
+        { path: '/admin/audit-log', label: 'Audit Log (Pananim audit log)' },
+        { path: '/admin/settings', label: 'Settings (Pananim settings)' },
+        { path: '/admin/login', label: 'Admin Login (Pananim admin login)' },
         { path: '/403', label: '78 /403 Access Denied' },
         { path: '/404', label: '79 /404 Not Found' },
         { path: '/service-unavailable', label: '80 /service-unavailable Recovery' },
@@ -218,7 +224,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
               fontSize: '0.775rem'
             }}
           >
-            Staff Reviewer
+            Admin (Atty. Cristina)
           </button>
         </div>
 
