@@ -206,7 +206,6 @@ export const App: React.FC = () => {
         localStorage.setItem('pananim_demo_user', JSON.stringify(currentUserStaff));
         localStorage.setItem('pananim_demo_role', 'staff');
       } catch (e) {}
-      navigate('/admin');
     } else {
       handleLogout();
     }
@@ -349,9 +348,17 @@ export const App: React.FC = () => {
     }
   };
 
+  // Clean route helper to prevent trailing slash mismatches
+  const cleanRoute = (currentRoute.length > 1 && currentRoute.endsWith('/'))
+    ? currentRoute.slice(0, -1)
+    : (currentRoute || '/');
+
   // Public & Buyer Route Renderer
   const renderRoute = () => {
-    if (currentRoute === '/') {
+    const route = cleanRoute;
+
+    // Homepage
+    if (route === '' || route === '/') {
       return (
         <HomePage 
           cropListings={cropListings} 
@@ -362,7 +369,8 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/shop' || currentRoute.startsWith('/shop?')) {
+    // Shop / Catalog
+    if (route === '/shop' || route.startsWith('/shop?') || route === '/crops') {
       const urlParams = new URLSearchParams(currentRoute.split('?')[1] || '');
       return (
         <ShopPage 
@@ -376,8 +384,8 @@ export const App: React.FC = () => {
     }
 
     // Dynamic Crop Lookup with fallback to CropNotFoundPage
-    if (currentRoute.startsWith('/crops/')) {
-      const cropId = currentRoute.replace('/crops/', '').split('?')[0];
+    if (route.startsWith('/crops/')) {
+      const cropId = route.replace('/crops/', '').split('?')[0];
       const crop = cropListings.find(c => c.id === cropId);
       if (!crop) {
         return <CropNotFoundPage cropId={cropId} onNavigate={navigate} />;
@@ -395,7 +403,8 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/market-prices') {
+    // Market Prices Reference
+    if (route === '/market-prices' || route.startsWith('/market-prices')) {
       return (
         <MarketPricesPage 
           priceRecords={mockMarketPrices} 
@@ -404,7 +413,8 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/farmers') {
+    // Farmers Directory
+    if (route === '/farmers') {
       return (
         <FarmersPage 
           farms={farms} 
@@ -413,8 +423,9 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/farmers/')) {
-      const farmId = currentRoute.replace('/farmers/', '');
+    // Farmer Storefront
+    if (route.startsWith('/farmers/')) {
+      const farmId = route.replace('/farmers/', '').split('?')[0];
       const farm = farms.find(f => f.id === farmId) || farms[0];
       return (
         <FarmerStorefrontPage 
@@ -426,7 +437,8 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/cart') {
+    // Cart
+    if (route === '/cart') {
       return (
         <CartPage 
           cartItems={cartItems} 
@@ -438,11 +450,12 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/checkout')) {
+    // Multi-Step Checkout
+    if (route.startsWith('/checkout')) {
       let activeStep: 1 | 2 | 3 | 4 = 1;
-      if (currentRoute === '/checkout/delivery') activeStep = 2;
-      if (currentRoute === '/checkout/payment') activeStep = 3;
-      if (currentRoute === '/checkout/review') activeStep = 4;
+      if (route === '/checkout/delivery') activeStep = 2;
+      if (route === '/checkout/payment') activeStep = 3;
+      if (route === '/checkout/review') activeStep = 4;
 
       return (
         <CheckoutPage 
@@ -456,15 +469,15 @@ export const App: React.FC = () => {
     }
 
     // Dynamic Order Confirmation Lookup
-    if (currentRoute.startsWith('/orders/') && currentRoute.includes('/confirmation')) {
-      const parts = currentRoute.split('/');
+    if (route.startsWith('/orders/') && route.includes('/confirmation')) {
+      const parts = route.split('/');
       const orderId = parts[2];
-      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
-      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId) || orders[0];
       return <OrderConfirmationPage order={order} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/buyer/orders' || currentRoute === '/buyer/dashboard') {
+    // General Orders / Buyer Dashboard
+    if (route === '/buyer/orders' || route === '/buyer/dashboard' || route === '/orders') {
       return (
         <BuyerOrdersPage 
           orders={orders} 
@@ -475,67 +488,78 @@ export const App: React.FC = () => {
     }
 
     // Dynamic Order Tracking Lookup
-    if (currentRoute.startsWith('/buyer/orders/') && currentRoute.includes('/tracking')) {
-      const parts = currentRoute.split('/');
+    if (route.startsWith('/buyer/orders/') && route.includes('/tracking')) {
+      const parts = route.split('/');
       const orderId = parts[3];
-      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
-      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId) || orders[0];
       return <OrderTrackingPage order={order} onNavigate={navigate} />;
     }
 
     // Dynamic Order Invoice Lookup
-    if (currentRoute.startsWith('/buyer/orders/') && currentRoute.includes('/invoice')) {
-      const parts = currentRoute.split('/');
+    if (route.startsWith('/buyer/orders/') && route.includes('/invoice')) {
+      const parts = route.split('/');
       const orderId = parts[3];
-      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
-      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId) || orders[0];
       return <InvoicePage order={order} onNavigate={navigate} />;
     }
 
     // Dynamic Order Issue Dispute Lookup
-    if (currentRoute.startsWith('/buyer/orders/') && currentRoute.includes('/issue')) {
-      const parts = currentRoute.split('/');
+    if (route.startsWith('/buyer/orders/') && route.includes('/issue')) {
+      const parts = route.split('/');
       const orderId = parts[3];
-      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId);
-      if (!order) return <OrderNotFoundPage orderId={orderId} onNavigate={navigate} />;
+      const order = orders.find(o => o.id === orderId || o.invoiceNumber === orderId) || orders[0];
       return <IssueReportPage order={order} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/buyer/profile' || currentRoute === '/buyer/addresses') {
+    // Buyer Profile, Addresses & Settings
+    if (
+      route === '/buyer/profile' || 
+      route === '/buyer/addresses' || 
+      route === '/buyer/settings' || 
+      route.startsWith('/buyer/profile') || 
+      route.startsWith('/buyer/addresses')
+    ) {
       return <BuyerProfilePage currentUser={currentUser} onNavigate={navigate} />;
     }
 
-    if (currentRoute.startsWith('/farmer')) {
-      return renderFarmerRoute();
+    // Buyer Transactions (alias to Orders workspace)
+    if (route === '/buyer/transactions' || route.startsWith('/buyer/transactions')) {
+      return (
+        <BuyerOrdersPage 
+          orders={orders} 
+          onNavigate={navigate} 
+          onTrackOrder={(orderId) => navigate(`/buyer/orders/${orderId}/tracking`)}
+        />
+      );
     }
 
-    if (currentRoute === '/buyer/quotes') {
+    if (route === '/buyer/quotes' || route.startsWith('/buyer/quotes')) {
       return <QuotesPage isFarmer={false} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/buyer/reviews') {
+    if (route === '/buyer/reviews' || route.startsWith('/buyer/reviews')) {
       return <ReviewsHubPage isFarmer={false} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/buyer/deliveries') {
+    if (route === '/buyer/deliveries' || route.startsWith('/buyer/deliveries')) {
       return <DeliveriesTrackingHubPage isFarmer={false} onNavigate={navigate} />;
     }
 
-    if (currentRoute === '/buyer/messages') {
+    if (route === '/buyer/messages' || route.startsWith('/buyer/messages')) {
       return <MessagesInboxPage isFarmer={false} onNavigate={navigate} />;
     }
 
     // Informational pages
-    if (currentRoute === '/how-it-works') return <HowItWorksPage onNavigate={navigate} />;
-    if (currentRoute === '/sell-with-pananim') return <SellWithPananimPage onNavigate={navigate} />;
-    if (currentRoute === '/delivery-coverage') return <DeliveryCoveragePage onNavigate={navigate} />;
-    if (currentRoute === '/about') return <AboutPage onNavigate={navigate} />;
-    if (currentRoute === '/help') return <HelpPage onNavigate={navigate} />;
-    if (currentRoute === '/contact') return <ContactPage onNavigate={navigate} />;
-    if (currentRoute.startsWith('/policies')) return <PoliciesPage onNavigate={navigate} />;
+    if (route === '/how-it-works' || route.startsWith('/how-it-works')) return <HowItWorksPage onNavigate={navigate} />;
+    if (route === '/sell-with-pananim' || route.startsWith('/sell-with-pananim')) return <SellWithPananimPage onNavigate={navigate} />;
+    if (route === '/delivery-coverage' || route.startsWith('/delivery-coverage')) return <DeliveryCoveragePage onNavigate={navigate} />;
+    if (route === '/about' || route.startsWith('/about')) return <AboutPage onNavigate={navigate} />;
+    if (route === '/help' || route.startsWith('/help')) return <HelpPage onNavigate={navigate} />;
+    if (route === '/contact' || route.startsWith('/contact')) return <ContactPage onNavigate={navigate} />;
+    if (route.startsWith('/policies')) return <PoliciesPage onNavigate={navigate} />;
 
     // Auth pages (Unified Login & Unified Registration)
-    if (currentRoute === '/login' || currentRoute === '/forgot-password') {
+    if (route === '/login' || route === '/forgot-password') {
       return (
         <LoginPage 
           onNavigate={navigate} 
@@ -547,7 +571,7 @@ export const App: React.FC = () => {
       );
     }
     
-    if (currentRoute === '/register') {
+    if (route === '/register') {
       return (
         <RegisterPage 
           onNavigate={navigate} 
@@ -559,7 +583,7 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/register/buyer') {
+    if (route === '/register/buyer') {
       return (
         <RegisterPage 
           initialRole="buyer"
@@ -572,7 +596,7 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/register/farmer') {
+    if (route === '/register/farmer') {
       return (
         <RegisterPage 
           initialRole="farmer"
@@ -585,21 +609,24 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/verify-contact') {
+    if (route === '/verify-contact') {
       return <VerifyContactPage onNavigate={navigate} />;
     }
 
     // Error pages
-    if (currentRoute === '/403') return <ForbiddenPage onNavigate={navigate} />;
-    if (currentRoute === '/service-unavailable') return <ServiceUnavailablePage onNavigate={navigate} />;
-    if (currentRoute === '/session-expired') return <SessionExpiredPage onNavigate={navigate} />;
+    if (route === '/403') return <ForbiddenPage onNavigate={navigate} />;
+    if (route === '/404') return <NotFoundPage onNavigate={navigate} />;
+    if (route === '/service-unavailable') return <ServiceUnavailablePage onNavigate={navigate} />;
+    if (route === '/session-expired') return <SessionExpiredPage onNavigate={navigate} />;
 
     return <NotFoundPage onNavigate={navigate} />;
   };
 
   // Farmer Route Renderer (Consolidated to canonical 6 destinations)
   const renderFarmerRoute = () => {
-    if (currentRoute === '/farmer' || currentRoute === '/farmer/dashboard') {
+    const route = cleanRoute;
+
+    if (route === '/farmer' || route === '/farmer/dashboard') {
       return (
         <FarmerDashboardPage 
           cropListings={cropListings} 
@@ -612,7 +639,7 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/farmer/inventory' || currentRoute === '/farmer/crops') {
+    if (route === '/farmer/inventory' || route === '/farmer/crops') {
       return (
         <FarmerCropsPage 
           crops={cropListings} 
@@ -622,8 +649,8 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/farmer/crops/')) {
-      const cropId = currentRoute.replace('/farmer/crops/', '');
+    if (route.startsWith('/farmer/crops/')) {
+      const cropId = route.replace('/farmer/crops/', '').split('?')[0];
       return (
         <FarmerCropDetailPage 
           cropId={cropId} 
@@ -636,7 +663,7 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/farmer/inventory/new') {
+    if (route === '/farmer/inventory/new') {
       return (
         <FarmerNewListingPage 
           farmer={farms[0]} 
@@ -646,7 +673,7 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/farmer/orders' || currentRoute === '/farmer/sales') {
+    if (route === '/farmer/orders' || route === '/farmer/sales') {
       return (
         <FarmerOrdersPage 
           orders={orders} 
@@ -656,13 +683,13 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute === '/farmer/settlements' || currentRoute === '/farmer/wallet' || currentRoute === '/farmer/transactions') {
+    if (route === '/farmer/settlements' || route === '/farmer/wallet' || route === '/farmer/transactions') {
       return (
         <FarmerWalletPage onNavigate={navigate} />
       );
     }
 
-    if (currentRoute === '/farmer/messages') {
+    if (route === '/farmer/messages') {
       return (
         <FarmerMessagesPage onNavigate={navigate} />
       );
@@ -670,14 +697,15 @@ export const App: React.FC = () => {
 
     // Consolidated Farmer Account (Profile, Storefront, RSBSA Verification)
     if (
-      currentRoute.startsWith('/farmer/account') || 
-      currentRoute.startsWith('/farmer/verification') || 
-      currentRoute.startsWith('/farmer/storefront') || 
-      currentRoute.startsWith('/farmer/profile')
+      route.startsWith('/farmer/account') || 
+      route.startsWith('/farmer/verification') || 
+      route.startsWith('/farmer/storefront') || 
+      route.startsWith('/farmer/profile') ||
+      route.startsWith('/farmer/onboarding')
     ) {
       let initialTab: 'profile' | 'storefront' | 'verification' = 'profile';
-      if (currentRoute.includes('verification')) initialTab = 'verification';
-      if (currentRoute.includes('storefront')) initialTab = 'storefront';
+      if (route.includes('verification') || route.includes('onboarding')) initialTab = 'verification';
+      if (route.includes('storefront')) initialTab = 'storefront';
 
       return (
         <FarmerAccountPage 
@@ -690,13 +718,21 @@ export const App: React.FC = () => {
       );
     }
 
-    // Unknown farmer route -> proper Not Found state (Requirement 7.3)
+    // If an unknown /farmer/* route is hit, show 404
     return <NotFoundPage onNavigate={navigate} />;
   };
 
   // Admin Route Renderer (Consolidated to canonical 8 destinations)
   const renderAdminRoute = () => {
-    if (currentRoute === '/admin' || currentRoute === '/admin/overview' || currentRoute === '/admin/dashboard' || currentRoute === '/staff') {
+    const route = cleanRoute;
+
+    if (
+      route === '/admin' || 
+      route === '/admin/overview' || 
+      route === '/admin/dashboard' || 
+      route === '/staff' || 
+      route === '/staff/overview'
+    ) {
       return (
         <AdminOverviewPage 
           cropListings={cropListings} 
@@ -710,7 +746,7 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/admin/crops')) {
+    if (route.startsWith('/admin/crops')) {
       return (
         <AdminCropListingsPage 
           cropListings={cropListings} 
@@ -722,11 +758,11 @@ export const App: React.FC = () => {
 
     // Consolidated User Management (Farmers, Buyers, Users, Verifications)
     if (
-      currentRoute.startsWith('/admin/users') || 
-      currentRoute.startsWith('/admin/farmers') || 
-      currentRoute.startsWith('/admin/buyers') || 
-      currentRoute.startsWith('/admin/verifications') || 
-      currentRoute.startsWith('/staff/verifications')
+      route.startsWith('/admin/users') || 
+      route.startsWith('/admin/farmers') || 
+      route.startsWith('/admin/buyers') || 
+      route.startsWith('/admin/verifications') || 
+      route.startsWith('/staff/verifications')
     ) {
       return (
         <AdminFarmersBuyersPage 
@@ -742,9 +778,9 @@ export const App: React.FC = () => {
 
     // Consolidated Transactions & Logistics & Finance
     if (
-      currentRoute.startsWith('/admin/transactions') || 
-      currentRoute.startsWith('/admin/finance') ||
-      currentRoute.startsWith('/admin/logistics')
+      route.startsWith('/admin/transactions') || 
+      route.startsWith('/admin/finance') ||
+      route.startsWith('/admin/logistics')
     ) {
       return (
         <AdminTransactionsPage 
@@ -754,36 +790,37 @@ export const App: React.FC = () => {
       );
     }
 
-    if (currentRoute.startsWith('/admin/market-prices')) {
+    if (route.startsWith('/admin/market-prices')) {
       return (
         <AdminMarketPricesPage onNavigate={navigate} />
       );
     }
 
-    if (currentRoute.startsWith('/admin/reports') || currentRoute.startsWith('/admin/disputes')) {
+    if (route.startsWith('/admin/reports') || route.startsWith('/admin/disputes')) {
       return (
         <AdminDisputesPage onNavigate={navigate} />
       );
     }
 
-    if (currentRoute.startsWith('/admin/audit-log')) {
+    if (route.startsWith('/admin/audit-log')) {
       return (
         <AdminAuditLogPage onNavigate={navigate} />
       );
     }
 
-    if (currentRoute.startsWith('/admin/settings')) {
+    if (route.startsWith('/admin/settings')) {
       return (
         <AdminSettingsPage onNavigate={navigate} />
       );
     }
 
-    // Unknown admin route -> proper Not Found state (Requirement 7.3)
+    // If an unknown /admin/* route is hit, show 404
     return <NotFoundPage onNavigate={navigate} />;
   };
 
-  const isAdminRoute = currentRoute.startsWith('/admin') || currentRoute.startsWith('/staff') || (currentRole === 'staff' && (currentRoute === '/' || currentRoute === '/admin'));
-  const isFarmerRoute = currentRoute.startsWith('/farmer') || (currentRole === 'farmer' && (currentRoute === '/' || currentRoute === '/farmer'));
+  // Route-based layout switching (NEVER hijacks public/buyer routes like '/' or '/farmers' or '/shop')
+  const isAdminRoute = ((cleanRoute === '/admin' || cleanRoute.startsWith('/admin/')) && cleanRoute !== '/admin/login') || cleanRoute === '/staff' || cleanRoute.startsWith('/staff/');
+  const isFarmerRoute = cleanRoute === '/farmer' || cleanRoute.startsWith('/farmer/');
 
   return (
     <ChatProvider currentUser={currentUser} onNavigate={navigate} farms={farms}>
