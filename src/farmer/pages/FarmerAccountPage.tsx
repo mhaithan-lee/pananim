@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Farm, User, VerificationApplication } from '../../types';
 import { 
   Building, 
@@ -36,6 +36,12 @@ export const FarmerAccountPage: React.FC<FarmerAccountPageProps> = ({
   initialTab = 'profile'
 }) => {
   const [activeTab, setActiveTab] = useState<'profile' | 'storefront' | 'verification'>(initialTab);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   // Farm Details State
   const [farmName, setFarmName] = useState(farm?.name || farm?.farmerName || 'Santos Organic Farms');
@@ -441,21 +447,81 @@ export const FarmerAccountPage: React.FC<FarmerAccountPageProps> = ({
             </h3>
 
             {verificationSubmitted ? (
-              <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-                <CheckCircle2 size={48} color="#1B7A43" style={{ margin: '0 auto 1rem auto' }} />
-                <h3 style={{ fontSize: '1.4rem', color: '#0C3C2C', marginBottom: '0.5rem' }}>
-                  Documents Under Compliance Review!
+              <div style={{ textAlign: 'center', padding: '2.5rem 1.5rem', backgroundColor: '#FAF7F2', borderRadius: '16px', border: '1.5px solid #DECDBD' }}>
+                <div style={{ position: 'relative', width: '70px', height: '70px', margin: '0 auto 1.25rem auto' }}>
+                  <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#D1E7DD', opacity: 0.7, transform: 'scale(1.2)' }} />
+                  <div style={{ position: 'relative', width: '70px', height: '70px', borderRadius: '50%', backgroundColor: '#1B7A43', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(27, 122, 67, 0.35)' }}>
+                    <CheckCircle2 size={40} color="#FFFFFF" strokeWidth={2.5} />
+                  </div>
+                </div>
+
+                <span className="farmer-badge green" style={{ padding: '6px 14px', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem', display: 'inline-block' }}>
+                  🎉 Welcome to Pananim Verified Growers!
+                </span>
+
+                <h3 style={{ fontSize: '1.8rem', color: '#0C3C2C', fontWeight: 800, marginBottom: '0.5rem' }}>
+                  Farmer Verification Activated
                 </h3>
-                <p style={{ color: '#5E6E64', fontSize: '0.9rem', maxWidth: '420px', margin: '0 auto 1.5rem auto' }}>
-                  Your updated accreditation credentials have been registered in the demonstration compliance log.
+                <p style={{ color: '#5E6E64', fontSize: '0.925rem', maxWidth: '440px', margin: '0 auto 1.5rem auto', lineHeight: 1.6 }}>
+                  Congratulations, <strong>{ownerName}</strong>! Your farm credentials for <strong>{farmName}</strong> have been registered and verified under <strong>{rsbsaNumber}</strong>.
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setVerificationSubmitted(false)}
-                  className="farmer-btn-secondary"
-                >
-                  Edit Credential Documents
-                </button>
+
+                {/* Verified Credentials Summary */}
+                <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', padding: '1.25rem', border: '1px solid #EBE4DA', maxWidth: '440px', margin: '0 auto 1.75rem auto', textAlign: 'left', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', borderBottom: '1px solid #F5EDE2', paddingBottom: '0.4rem' }}>
+                    <span style={{ color: '#8A7B76' }}>Accreditation Tier:</span>
+                    <strong style={{ color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Award size={15} color="#D48216" /> DA Accredited Producer
+                    </strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                    <span style={{ color: '#8A7B76' }}>Farm / Producer:</span>
+                    <strong style={{ color: '#0C3C2C' }}>{farmName}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                    <span style={{ color: '#8A7B76' }}>RSBSA Number:</span>
+                    <strong style={{ color: '#0C3C2C' }}>{rsbsaNumber}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
+                    <span style={{ color: '#8A7B76' }}>Barangay Jurisdiction:</span>
+                    <strong style={{ color: '#0C3C2C' }}>{barangayName}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#8A7B76' }}>Trading Status:</span>
+                    <strong style={{ color: '#1B7A43' }}>✅ Active • Instant Payout Eligible</strong>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxWidth: '440px', margin: '0 auto' }}>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('/farmer/dashboard')}
+                    className="farmer-btn-primary"
+                    style={{ width: '100%', justifyContent: 'center', padding: '12px 20px', fontSize: '0.95rem', fontWeight: 700 }}
+                  >
+                    Enter Farmer Dashboard &rarr;
+                  </button>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => onNavigate('/farmer/inventory/new')}
+                      className="farmer-btn-secondary"
+                      style={{ justifyContent: 'center', fontSize: '0.8rem', padding: '9px 12px' }}
+                    >
+                      ➕ List Harvest
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setVerificationSubmitted(false)}
+                      className="farmer-btn-secondary"
+                      style={{ justifyContent: 'center', fontSize: '0.8rem', padding: '9px 12px' }}
+                    >
+                      Edit Documents
+                    </button>
+                  </div>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmitVerification} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>

@@ -576,6 +576,7 @@ export const App: React.FC = () => {
       return (
         <LoginPage 
           onNavigate={navigate} 
+          initialForgotModalOpen={route === '/forgot-password'}
           onLoginSuccess={(u) => { 
             setCurrentUser(u); 
             setCurrentRole(u.role); 
@@ -623,7 +624,17 @@ export const App: React.FC = () => {
     }
 
     if (route === '/verify-contact') {
-      return <VerifyContactPage onNavigate={navigate} />;
+      return (
+        <VerifyContactPage 
+          initialRole="farmer"
+          initialStep={2}
+          onNavigate={navigate} 
+          onLoginSuccess={(u) => { 
+            setCurrentUser(u); 
+            setCurrentRole('farmer'); 
+          }} 
+        />
+      );
     }
 
     // Error pages

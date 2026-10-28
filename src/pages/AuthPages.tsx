@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Role } from '../types';
 import { 
   ShieldCheck, 
@@ -15,7 +15,10 @@ import {
   X,
   KeyRound,
   CheckCircle2,
-  ArrowLeft
+  ArrowLeft,
+  Award,
+  Store,
+  Sprout
 } from 'lucide-react';
 import { Logo } from '../components/Logo';
 
@@ -23,6 +26,7 @@ interface AuthPageProps {
   onNavigate: (route: string) => void;
   onLoginSuccess: (user: User) => void;
   initialRole?: Role;
+  initialForgotModalOpen?: boolean;
 }
 
 // Demo quick-login account presets
@@ -64,16 +68,28 @@ export const DEMO_ACCOUNTS = {
 // =============================================================================
 // LOGIN PAGE & SIMULATED AUTHENTICATION
 // =============================================================================
-export const LoginPage: React.FC<AuthPageProps> = ({ onNavigate, onLoginSuccess }) => {
+export const LoginPage: React.FC<AuthPageProps> = ({ 
+  onNavigate, 
+  onLoginSuccess,
+  initialRole,
+  initialForgotModalOpen = false
+}) => {
   const [identifier, setIdentifier] = useState('mateo.r@freshmarkets.ph');
   const [password, setPassword] = useState('password123');
-  const [selectedRole, setSelectedRole] = useState<Role>('buyer');
-  const [forgotModalOpen, setForgotModalOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<Role>(initialRole || 'buyer');
+  const [forgotModalOpen, setForgotModalOpen] = useState(initialForgotModalOpen);
   const [recoveryEmail, setRecoveryEmail] = useState('');
   const [recoveryStep, setRecoveryStep] = useState<'input' | 'demo_code' | 'success'>('input');
   const [demoRecoveryCode, setDemoRecoveryCode] = useState('RECOVER-8492');
   const [newPassword, setNewPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (initialForgotModalOpen) {
+      setForgotModalOpen(true);
+      setRecoveryStep('input');
+    }
+  }, [initialForgotModalOpen]);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -404,15 +420,26 @@ interface RegisterPageProps {
   onNavigate: (route: string) => void;
   onLoginSuccess?: (user: User) => void;
   initialRole?: 'buyer' | 'farmer';
+  initialStep?: 1 | 2 | 3;
 }
 
 export const RegisterPage: React.FC<RegisterPageProps> = ({ 
   onNavigate, 
   onLoginSuccess,
-  initialRole = 'buyer' 
+  initialRole = 'buyer',
+  initialStep = 1
 }) => {
   const [role, setRole] = useState<'buyer' | 'farmer'>(initialRole);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(initialStep);
+  const [registeredUser, setRegisteredUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (initialRole) setRole(initialRole);
+  }, [initialRole]);
+
+  useEffect(() => {
+    if (initialStep) setStep(initialStep);
+  }, [initialStep]);
 
   // Common Fields
   const [firstName, setFirstName] = useState(role === 'buyer' ? 'Mateo' : 'Ramon');
@@ -469,14 +496,20 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
     setStep(2);
   };
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyOtp = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setOtpError('');
+
+    const codeToTest = (enteredOtp.trim() || demoOtp.trim());
+    if (!enteredOtp) {
+      setEnteredOtp(demoOtp);
+    }
+
     setIsVerifying(true);
 
     setTimeout(() => {
       setIsVerifying(false);
-      if (enteredOtp.trim() !== demoOtp.trim()) {
+      if (codeToTest !== demoOtp.trim()) {
         setOtpError(`Incorrect verification code. Please enter the demo code: ${demoOtp}`);
         return;
       }
@@ -497,6 +530,8 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         isPhoneVerified: true
       };
 
+      setRegisteredUser(newUser);
+
       // Save non-sensitive demo session in localStorage
       try {
         localStorage.setItem('pananim_demo_user', JSON.stringify(newUser));
@@ -510,7 +545,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
       }
 
       setStep(3);
-    }, 400);
+    }, 350);
   };
 
   const handleResendOtp = () => {
@@ -859,16 +894,41 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               We simulated dispatching a 6-digit confirmation code to <strong>{phone}</strong>.
             </p>
 
-            {/* Clear Demo Code Banner */}
-            <div style={{ backgroundColor: '#FEF3E2', border: '1.5px dashed #D48216', borderRadius: '10px', padding: '0.85rem', marginBottom: '1.5rem', display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: '#D48216', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                Simulated Demo Verification Code
-              </span>
-              <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0C3C2C', letterSpacing: '0.25em' }}>
+            {/* Clear Clickable Demo Code Banner */}
+            <div 
+              onClick={() => {
+                setEnteredOtp(demoOtp);
+                setOtpError('');
+              }}
+              title="Click to automatically fill demo verification code"
+              style={{ 
+                backgroundColor: '#FEF3E2', 
+                border: '2px dashed #D48216', 
+                borderRadius: '12px', 
+                padding: '1rem 1.5rem', 
+                marginBottom: '1.5rem', 
+                display: 'inline-flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                gap: '6px',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+                boxShadow: '0 2px 8px rgba(212, 130, 22, 0.12)'
+              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(212, 130, 22, 0.2)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(212, 130, 22, 0.12)'; }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Sparkles size={14} color="#D48216" />
+                <span style={{ fontSize: '0.74rem', fontWeight: 800, color: '#D48216', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  Simulated Demo Verification Code
+                </span>
+              </div>
+              <span style={{ fontSize: '1.9rem', fontWeight: 900, color: '#0C3C2C', letterSpacing: '0.25em' }}>
                 {demoOtp}
               </span>
-              <span style={{ fontSize: '0.7rem', color: '#574A46' }}>
-                Type this 6-digit number below to simulate verification.
+              <span style={{ fontSize: '0.74rem', color: '#1B7A43', fontWeight: 700 }}>
+                👉 Click here to auto-fill code into the box below
               </span>
             </div>
 
@@ -890,7 +950,6 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
                 }}
                 placeholder="••••••"
                 maxLength={6}
-                required
                 style={{
                   fontSize: '1.8rem',
                   letterSpacing: '0.4em',
@@ -901,11 +960,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
                   padding: '0.65rem 0.5rem',
                   borderRadius: '10px',
                   border: '2px solid #0C3C2C',
-                  outline: 'none'
+                  outline: 'none',
+                  backgroundColor: '#FAF7F2'
                 }}
               />
 
-              <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '340px' }}>
+              <div style={{ display: 'flex', gap: '0.75rem', width: '100%', maxWidth: '360px' }}>
                 <button
                   type="button"
                   onClick={() => setStep(1)}
@@ -916,11 +976,11 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
                 </button>
                 <button
                   type="submit"
-                  disabled={enteredOtp.length !== 6 || isVerifying}
+                  disabled={isVerifying}
                   className="btn btn-primary"
-                  style={{ flex: 2, fontWeight: 700 }}
+                  style={{ flex: 2, fontWeight: 700, padding: '0.75rem 1rem' }}
                 >
-                  {isVerifying ? 'Checking...' : 'Verify & Continue'}
+                  {isVerifying ? 'Verifying OTP...' : 'Verify & Continue'}
                 </button>
               </div>
 
@@ -947,63 +1007,172 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           </div>
         )}
 
-        {/* STEP 3: REGISTRATION COMPLETE */}
+        {/* STEP 3: WELCOME SCREEN (CELEBRATORY & INTERACTIVE) */}
         {step === 3 && (
-          <div className="card" style={{ padding: '3rem 2rem', backgroundColor: '#FFFFFF', borderRadius: '16px', boxShadow: '0 4px 20px rgba(12, 60, 44, 0.08)', textAlign: 'center' }}>
-            <div style={{ width: '64px', height: '64px', borderRadius: '50%', backgroundColor: '#E2ECE5', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.25rem auto' }}>
-              <CheckCircle2 size={36} color="#1B7A43" />
+          <div className="card" style={{ padding: '3.5rem 2.5rem', backgroundColor: '#FFFFFF', borderRadius: '18px', boxShadow: '0 8px 30px rgba(12, 60, 44, 0.1)', textAlign: 'center', border: '1px solid #EBE4DA' }}>
+            <div style={{ position: 'relative', width: '76px', height: '76px', margin: '0 auto 1.5rem auto' }}>
+              <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#D1E7DD', opacity: 0.7, transform: 'scale(1.2)' }} />
+              <div style={{ position: 'relative', width: '76px', height: '76px', borderRadius: '50%', backgroundColor: '#1B7A43', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(27, 122, 67, 0.35)' }}>
+                <CheckCircle2 size={44} color="#FFFFFF" strokeWidth={2.5} />
+              </div>
             </div>
-            <span className="badge badge-green" style={{ marginBottom: '0.5rem' }}>Demo Account Activated</span>
-            <h2 style={{ fontSize: '1.9rem', color: '#0C3C2C', fontWeight: 800, marginBottom: '0.5rem' }}>
+
+            <span className="badge badge-green" style={{ marginBottom: '0.75rem', fontSize: '0.8rem', padding: '6px 14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              {role === 'farmer' ? '🌾 Verified Farmer Badge Activated' : '🛒 Commercial Buyer Verified'}
+            </span>
+
+            <h2 style={{ fontSize: '2.2rem', color: '#0C3C2C', fontWeight: 900, marginBottom: '0.5rem', letterSpacing: '-0.02em' }}>
               Welcome, {firstName}!
             </h2>
-            <p style={{ fontSize: '0.9rem', color: '#574A46', maxWidth: '440px', margin: '0 auto 1.75rem auto', lineHeight: 1.6 }}>
-              Your {role === 'farmer' ? 'Farmer / Cooperative' : 'Wholesale Buyer'} profile has been verified and registered in your local demo session.
+            <p style={{ fontSize: '0.95rem', color: '#574A46', maxWidth: '480px', margin: '0 auto 1.75rem auto', lineHeight: 1.6 }}>
+              {role === 'farmer'
+                ? 'Your Farmer / Agricultural Cooperative profile is verified and active. You are now eligible to list fresh produce and receive direct wholesale inquiries.'
+                : 'Your Wholesale Buyer profile is verified and active. You now have direct access to farm-gate pricing, volume logistics, and verified growers.'}
             </p>
 
-            <div style={{ backgroundColor: '#FAF7F2', borderRadius: '12px', padding: '1.25rem', border: '1px solid #DECDBD', maxWidth: '440px', margin: '0 auto 2rem auto', textAlign: 'left', fontSize: '0.85rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                <span style={{ color: '#8A7B76' }}>Account Type:</span>
-                <strong style={{ color: '#0C3C2C', textTransform: 'capitalize' }}>{role === 'farmer' ? 'Farmer Producer' : 'Commercial Buyer'}</strong>
+            {/* Account & Farm Summary Card */}
+            <div style={{ backgroundColor: '#FAF7F2', borderRadius: '14px', padding: '1.5rem', border: '1.5px solid #DECDBD', maxWidth: '480px', margin: '0 auto 2rem auto', textAlign: 'left', fontSize: '0.875rem', boxShadow: '0 2px 10px rgba(12, 60, 44, 0.04)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem', borderBottom: '1px solid #EFE6DC', paddingBottom: '0.5rem' }}>
+                <span style={{ color: '#8A7B76' }}>Account Tier:</span>
+                <strong style={{ color: '#0C3C2C', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <Award size={15} color="#D48216" />
+                  {role === 'farmer' ? 'Verified Agricultural Producer' : 'Direct Commercial Wholesaler'}
+                </strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                <span style={{ color: '#8A7B76' }}>Registered Name:</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <span style={{ color: '#8A7B76' }}>Account Holder:</span>
                 <strong style={{ color: '#0C3C2C' }}>{firstName} {lastName}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
-                <span style={{ color: '#8A7B76' }}>Mobile:</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                <span style={{ color: '#8A7B76' }}>Contact Number:</span>
                 <strong style={{ color: '#0C3C2C' }}>{phone}</strong>
               </div>
+              {role === 'farmer' && (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ color: '#8A7B76' }}>Farm / Cooperative:</span>
+                    <strong style={{ color: '#0C3C2C' }}>{farmName} ({province})</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ color: '#8A7B76' }}>Land Area:</span>
+                    <strong style={{ color: '#0C3C2C' }}>{farmHectares} Hectares</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#8A7B76' }}>Verification Status:</span>
+                    <strong style={{ color: '#1B7A43' }}>DA RSBSA Accredited • Ready to Sell</strong>
+                  </div>
+                </>
+              )}
               {role === 'buyer' && businessName && (
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#8A7B76' }}>Business:</span>
+                  <span style={{ color: '#8A7B76' }}>Registered Enterprise:</span>
                   <strong style={{ color: '#0C3C2C' }}>{businessName}</strong>
                 </div>
               )}
-              {role === 'farmer' && farmName && (
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: '#8A7B76' }}>Farm:</span>
-                  <strong style={{ color: '#0C3C2C' }}>{farmName} ({province})</strong>
-                </div>
-              )}
             </div>
 
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-              <button
-                type="button"
-                onClick={() => {
-                  if (role === 'farmer') {
+            {/* Action Buttons with Working Handlers */}
+            {role === 'farmer' ? (
+              <div style={{ maxWidth: '480px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fallbackUser: User = registeredUser || {
+                      ...DEMO_ACCOUNTS.farmer,
+                      name: `${firstName} ${lastName}`.trim(),
+                      email,
+                      phone,
+                      role: 'farmer'
+                    };
+                    if (onLoginSuccess) {
+                      onLoginSuccess(fallbackUser);
+                    }
                     onNavigate('/farmer/dashboard');
-                  } else {
+                  }}
+                  className="btn btn-primary btn-lg"
+                  style={{ fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', padding: '14px 24px', fontSize: '1rem', borderRadius: '10px' }}
+                >
+                  <span>Enter Farmer Workspace</span>
+                  <ArrowRight size={20} />
+                </button>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const fallbackUser: User = registeredUser || {
+                        ...DEMO_ACCOUNTS.farmer,
+                        name: `${firstName} ${lastName}`.trim(),
+                        email,
+                        phone,
+                        role: 'farmer'
+                      };
+                      if (onLoginSuccess) {
+                        onLoginSuccess(fallbackUser);
+                      }
+                      onNavigate('/farmer/inventory/new');
+                    }}
+                    className="btn btn-outline-warm"
+                    style={{ fontWeight: 700, padding: '10px', fontSize: '0.825rem', backgroundColor: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                  >
+                    <span>➕ Add Harvest</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const fallbackUser: User = registeredUser || {
+                        ...DEMO_ACCOUNTS.farmer,
+                        name: `${firstName} ${lastName}`.trim(),
+                        email,
+                        phone,
+                        role: 'farmer'
+                      };
+                      if (onLoginSuccess) {
+                        onLoginSuccess(fallbackUser);
+                      }
+                      onNavigate('/farmer/account');
+                    }}
+                    className="btn btn-outline-warm"
+                    style={{ fontWeight: 700, padding: '10px', fontSize: '0.825rem', backgroundColor: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                  >
+                    <span>🌾 Farm Profile</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div style={{ maxWidth: '480px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fallbackUser: User = registeredUser || {
+                      ...DEMO_ACCOUNTS.buyer,
+                      name: `${firstName} ${lastName}`.trim(),
+                      email,
+                      phone,
+                      role: 'buyer'
+                    };
+                    if (onLoginSuccess) {
+                      onLoginSuccess(fallbackUser);
+                    }
                     onNavigate('/buyer/orders');
-                  }
-                }}
-                className="btn btn-primary btn-lg"
-                style={{ fontWeight: 700 }}
-              >
-                Enter {role === 'farmer' ? 'Farmer' : 'Buyer'} Workspace &rarr;
-              </button>
-            </div>
+                  }}
+                  className="btn btn-primary btn-lg"
+                  style={{ fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', padding: '14px 24px' }}
+                >
+                  <span>Enter Buyer Workspace</span>
+                  <ArrowRight size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onNavigate('/marketplace')}
+                  className="btn btn-outline-warm"
+                  style={{ fontWeight: 700, backgroundColor: '#FFFFFF', padding: '10px' }}
+                >
+                  Browse Fresh Produce Marketplace &rarr;
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -1012,10 +1181,15 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
 };
 
 // Aliases for backward compatibility
-export const BuyerRegisterPage: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavigate }) => {
-  return <RegisterPage onNavigate={onNavigate} initialRole="buyer" />;
+export const BuyerRegisterPage: React.FC<{ onNavigate: (route: string) => void; onLoginSuccess?: (user: User) => void }> = ({ onNavigate, onLoginSuccess }) => {
+  return <RegisterPage onNavigate={onNavigate} onLoginSuccess={onLoginSuccess} initialRole="buyer" />;
 };
 
-export const VerifyContactPage: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavigate }) => {
-  return <RegisterPage onNavigate={onNavigate} initialRole="buyer" />;
+export const VerifyContactPage: React.FC<{ 
+  onNavigate: (route: string) => void; 
+  onLoginSuccess?: (user: User) => void; 
+  initialRole?: 'buyer' | 'farmer';
+  initialStep?: 1 | 2 | 3;
+}> = ({ onNavigate, onLoginSuccess, initialRole = 'farmer', initialStep = 2 }) => {
+  return <RegisterPage onNavigate={onNavigate} onLoginSuccess={onLoginSuccess} initialRole={initialRole} initialStep={initialStep} />;
 };

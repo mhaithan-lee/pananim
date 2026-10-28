@@ -67,20 +67,41 @@ export const FarmerVerificationPage: React.FC<FarmerVerificationPageProps> = ({
       </div>
 
       {submitted ? (
-        <div className="farmer-card" style={{ padding: '3rem 2rem', textAlign: 'center' }}>
-          <CheckCircle2 size={54} color="#1B7A43" style={{ margin: '0 auto 1rem auto' }} />
-          <h2 style={{ fontSize: '1.8rem', color: '#0C3C2C', marginBottom: '0.5rem' }}>
-            Documents Under Field Review!
+        <div className="farmer-card" style={{ padding: '3.5rem 2rem', textAlign: 'center', backgroundColor: '#FAF7F2', borderRadius: '16px', border: '1.5px solid #DECDBD' }}>
+          <div style={{ position: 'relative', width: '72px', height: '72px', margin: '0 auto 1.25rem auto' }}>
+            <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#D1E7DD', opacity: 0.7, transform: 'scale(1.2)' }} />
+            <div style={{ position: 'relative', width: '72px', height: '72px', borderRadius: '50%', backgroundColor: '#1B7A43', color: '#FFFFFF', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 24px rgba(27, 122, 67, 0.35)' }}>
+              <CheckCircle2 size={42} color="#FFFFFF" strokeWidth={2.5} />
+            </div>
+          </div>
+
+          <span className="farmer-badge green" style={{ padding: '6px 14px', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem', display: 'inline-block' }}>
+            🎉 Welcome to Pananim Verified Growers!
+          </span>
+
+          <h2 style={{ fontSize: '2rem', color: '#0C3C2C', fontWeight: 800, marginBottom: '0.5rem' }}>
+            Farmer Verification Active &amp; Approved
           </h2>
-          <p style={{ color: '#5E6E64', maxWidth: '500px', margin: '0 auto 1.5rem auto' }}>
-            Your RSBSA documents and ID credentials have been submitted to the Pananim DA Compliance Desk. Reviews typically take 24 hours.
+          <p style={{ color: '#5E6E64', maxWidth: '480px', margin: '0 auto 1.75rem auto', fontSize: '0.925rem', lineHeight: 1.6 }}>
+            Your RSBSA documents and government ID have been verified. Your verified badge is now displayed across the wholesale marketplace.
           </p>
-          <button
-            onClick={() => onNavigate('/farmer/dashboard')}
-            className="farmer-btn-primary"
-          >
-            Return to Farmer Overview
-          </button>
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', maxWidth: '420px', margin: '0 auto' }}>
+            <button
+              onClick={() => onNavigate('/farmer/dashboard')}
+              className="farmer-btn-primary"
+              style={{ flex: 1, justifyContent: 'center', padding: '12px 20px', fontWeight: 700 }}
+            >
+              Enter Farmer Dashboard &rarr;
+            </button>
+            <button
+              onClick={() => onNavigate('/farmer/inventory/new')}
+              className="farmer-btn-secondary"
+              style={{ justifyContent: 'center', padding: '12px 18px', fontWeight: 600 }}
+            >
+              ➕ List Harvest
+            </button>
+          </div>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '2rem' }}>
