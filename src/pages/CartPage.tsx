@@ -19,6 +19,7 @@ interface CartPageProps {
   onRemoveItem: (itemId: string) => void;
   onNavigate: (route: string) => void;
   onLoadWorkedExample: () => void;
+  onLoadSampleVeggies?: () => void;
 }
 
 export const CartPage: React.FC<CartPageProps> = ({
@@ -26,7 +27,8 @@ export const CartPage: React.FC<CartPageProps> = ({
   onUpdateQuantity,
   onRemoveItem,
   onNavigate,
-  onLoadWorkedExample
+  onLoadWorkedExample,
+  onLoadSampleVeggies
 }) => {
   const { openChatWithSeller } = useChat();
   // Group cart items by farm
@@ -59,13 +61,24 @@ export const CartPage: React.FC<CartPageProps> = ({
             <h1>Your Crop Order</h1>
             <p>Items grouped by provincial farm. Multi-farmer orders generate separate seller shipments.</p>
           </div>
-          <button
-            onClick={onLoadWorkedExample}
-            className="btn btn-outline-warm btn-sm"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', borderColor: '#9B3C1B', color: '#9B3C1B' }}
-          >
-            <Sparkles size={14} /> Load ₱950 Worked Demo Cart (Section 9)
-          </button>
+          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+            {onLoadSampleVeggies && (
+              <button
+                onClick={onLoadSampleVeggies}
+                className="btn btn-outline-warm btn-sm"
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', borderColor: '#0C3C2C', color: '#0C3C2C' }}
+              >
+                <ShoppingBag size={14} /> Fill Fresh Veggies Cart
+              </button>
+            )}
+            <button
+              onClick={onLoadWorkedExample}
+              className="btn btn-outline-warm btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', borderColor: '#9B3C1B', color: '#9B3C1B' }}
+            >
+              <Sparkles size={14} /> Load ₱950 Worked Demo Cart (Section 9)
+            </button>
+          </div>
         </div>
 
         {cartItems.length === 0 ? (
@@ -84,10 +97,15 @@ export const CartPage: React.FC<CartPageProps> = ({
             <p style={{ marginTop: '0.5rem', marginBottom: '2rem' }}>
               Explore fresh harvests directly from verified Filipino farms and agricultural cooperatives.
             </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <button onClick={() => onNavigate('/shop')} className="btn btn-primary">
                 Browse Available Crops
               </button>
+              {onLoadSampleVeggies && (
+                <button onClick={onLoadSampleVeggies} className="btn btn-secondary">
+                  Fill Fresh Veggies Cart
+                </button>
+              )}
               <button onClick={onLoadWorkedExample} className="btn btn-accent">
                 Load ₱950 Demo Cart
               </button>

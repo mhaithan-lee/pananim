@@ -135,12 +135,12 @@ export const App: React.FC = () => {
   const [applications, setApplications] = useState<VerificationApplication[]>(mockVerificationApplications);
   const [buyerNotifications, setBuyerNotifications] = useState<BuyerNotificationItem[]>(INITIAL_BUYER_NOTIFICATIONS);
 
-  // Cart State (Preloaded with Santos Farms delivery items for rich initial realism)
-  const [cartItems, setCartItems] = useState<CartItem[]>([
+  // Default preloaded fresh vegetable cart
+  const defaultSampleVeggieCart: CartItem[] = [
     {
       id: 'cart-1',
       listingId: 'crop-001',
-      crop: mockCropListings[0], // Red Onions
+      crop: mockCropListings[0], // Red Onions (Santos Agri-Farms, Nueva Ecija)
       quantity: 25,
       selectedTierPrice: 120,
       subtotal: 3000,
@@ -149,13 +149,43 @@ export const App: React.FC = () => {
     {
       id: 'cart-2',
       listingId: 'crop-002',
-      crop: mockCropListings[1], // Cherry Tomatoes
-      quantity: 5,
+      crop: mockCropListings[1], // Cherry Tomatoes (San Pablo Valley Organic Producers, Laguna)
+      quantity: 10,
       selectedTierPrice: 85,
-      subtotal: 425,
+      subtotal: 850,
+      fulfillmentType: 'delivery'
+    },
+    {
+      id: 'cart-3',
+      listingId: 'crop-004',
+      crop: mockCropListings[3], // Highland Cabbage (Benguet Highland Growers Coop, Benguet)
+      quantity: 20,
+      selectedTierPrice: 60,
+      subtotal: 1200,
+      fulfillmentType: 'delivery'
+    },
+    {
+      id: 'cart-4',
+      listingId: 'crop-007',
+      crop: mockCropListings[6], // Benguet Carrots (Benguet Highland Growers Coop, Benguet)
+      quantity: 15,
+      selectedTierPrice: 70,
+      subtotal: 1050,
+      fulfillmentType: 'delivery'
+    },
+    {
+      id: 'cart-5',
+      listingId: 'crop-003',
+      crop: mockCropListings[2], // Eggplants (Pangasinan Lowland Agri-Hub, Pangasinan)
+      quantity: 15,
+      selectedTierPrice: 65,
+      subtotal: 975,
       fulfillmentType: 'delivery'
     }
-  ]);
+  ];
+
+  // Cart State (Preloaded with rich fresh vegetable items across Philippine farms)
+  const [cartItems, setCartItems] = useState<CartItem[]>(defaultSampleVeggieCart);
 
   // Synchronize browser history / popstate
   useEffect(() => {
@@ -261,6 +291,11 @@ export const App: React.FC = () => {
     ];
 
     setCartItems(workedCart);
+    navigate('/cart');
+  };
+
+  const handleLoadSampleVeggies = () => {
+    setCartItems(defaultSampleVeggieCart);
     navigate('/cart');
   };
 
@@ -471,6 +506,7 @@ export const App: React.FC = () => {
           onRemoveItem={handleRemoveCartItem} 
           onNavigate={navigate} 
           onLoadWorkedExample={handleLoadWorkedExample950}
+          onLoadSampleVeggies={handleLoadSampleVeggies}
         />
       );
     }
@@ -487,17 +523,7 @@ export const App: React.FC = () => {
       return (
         <CheckoutPage 
           key={checkoutPath}
-          cartItems={cartItems.length > 0 ? cartItems : [
-            {
-              id: 'cart-demo',
-              listingId: 'crop-001',
-              crop: mockCropListings[0],
-              quantity: 25,
-              selectedTierPrice: 120,
-              subtotal: 3000,
-              fulfillmentType: 'delivery'
-            }
-          ]} 
+          cartItems={cartItems.length > 0 ? cartItems : defaultSampleVeggieCart} 
           currentUser={currentUser} 
           onNavigate={navigate} 
           onPlaceOrder={handlePlaceOrder}
