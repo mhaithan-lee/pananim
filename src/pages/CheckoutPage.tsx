@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CartItem, OrderGroup, User } from '../types';
 import { 
   CheckCircle, 
@@ -30,6 +30,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
 }) => {
   const [step, setStep] = useState<number>(activeStep);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Synchronize step with activeStep prop when navigated from Route Navigator
+  useEffect(() => {
+    if (activeStep) {
+      setStep(activeStep);
+    }
+  }, [activeStep]);
 
   // Step 1: Address State
   const [recipientName, setRecipientName] = useState(currentUser?.name || 'Mateo Rodriguez');
@@ -197,20 +204,55 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
               className="stepper-progress" 
               style={{ width: step === 1 ? '0%' : step === 2 ? '33%' : step === 3 ? '66%' : '100%' }}
             />
-            <div className={`step-node ${step >= 1 ? 'completed' : ''} ${step === 1 ? 'active' : ''}`}>
-              <div className="step-circle">1</div>
+            {/* Step 1 Node */}
+            <div 
+              onClick={() => { setStep(1); onNavigate('/checkout/address'); }}
+              className={`step-node ${step > 1 ? 'completed' : ''} ${step === 1 ? 'active' : ''}`}
+              style={{ cursor: 'pointer' }}
+              title="Page 28: Address"
+            >
+              <div className="step-circle">
+                {step > 1 ? <CheckCircle size={16} /> : '1'}
+              </div>
               <span className="step-label">Address</span>
             </div>
-            <div className={`step-node ${step >= 2 ? 'completed' : ''} ${step === 2 ? 'active' : ''}`}>
-              <div className="step-circle">2</div>
+
+            {/* Step 2 Node */}
+            <div 
+              onClick={() => { setStep(2); onNavigate('/checkout/delivery'); }}
+              className={`step-node ${step > 2 ? 'completed' : ''} ${step === 2 ? 'active' : ''}`}
+              style={{ cursor: 'pointer' }}
+              title="Page 29: Fulfillment / Delivery"
+            >
+              <div className="step-circle">
+                {step > 2 ? <CheckCircle size={16} /> : '2'}
+              </div>
               <span className="step-label">Fulfillment</span>
             </div>
-            <div className={`step-node ${step >= 3 ? 'completed' : ''} ${step === 3 ? 'active' : ''}`}>
-              <div className="step-circle">3</div>
+
+            {/* Step 3 Node */}
+            <div 
+              onClick={() => { setStep(3); onNavigate('/checkout/payment'); }}
+              className={`step-node ${step > 3 ? 'completed' : ''} ${step === 3 ? 'active' : ''}`}
+              style={{ cursor: 'pointer' }}
+              title="Page 30: Payment"
+            >
+              <div className="step-circle">
+                {step > 3 ? <CheckCircle size={16} /> : '3'}
+              </div>
               <span className="step-label">Payment</span>
             </div>
-            <div className={`step-node ${step >= 4 ? 'completed' : ''} ${step === 4 ? 'active' : ''}`}>
-              <div className="step-circle">4</div>
+
+            {/* Step 4 Node */}
+            <div 
+              onClick={() => { setStep(4); onNavigate('/checkout/review'); }}
+              className={`step-node ${step > 4 ? 'completed' : ''} ${step === 4 ? 'active' : ''}`}
+              style={{ cursor: 'pointer' }}
+              title="Page 31: Review"
+            >
+              <div className="step-circle">
+                {step > 4 ? <CheckCircle size={16} /> : '4'}
+              </div>
               <span className="step-label">Review</span>
             </div>
           </div>
@@ -488,7 +530,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <button onClick={() => setStep(1)} className="btn btn-outline-warm">
+                  <button onClick={() => { setStep(1); onNavigate('/checkout/address'); }} className="btn btn-outline-warm">
                     <ArrowLeft size={16} /> Back to Address
                   </button>
                   <button onClick={handleNextStep} className="btn btn-primary btn-lg">
@@ -627,7 +669,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <button onClick={() => setStep(2)} className="btn btn-outline-warm">
+                  <button onClick={() => { setStep(2); onNavigate('/checkout/delivery'); }} className="btn btn-outline-warm">
                     <ArrowLeft size={16} /> Back to Fulfillment
                   </button>
                   <button onClick={handleNextStep} className="btn btn-primary btn-lg">
@@ -716,7 +758,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <button onClick={() => setStep(3)} className="btn btn-outline-warm">
+                  <button onClick={() => { setStep(3); onNavigate('/checkout/payment'); }} className="btn btn-outline-warm">
                     <ArrowLeft size={16} /> Back to Payment
                   </button>
 

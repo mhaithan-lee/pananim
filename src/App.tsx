@@ -450,16 +450,29 @@ export const App: React.FC = () => {
       );
     }
 
-    // Multi-Step Checkout
-    if (route.startsWith('/checkout')) {
+    // Multi-Step Checkout (Page 28: Address, Page 29: Delivery, Page 30: Payment, Page 31: Review)
+    const checkoutPath = route.split('?')[0].replace(/\/+$/, '') || '/checkout';
+    if (checkoutPath.startsWith('/checkout')) {
       let activeStep: 1 | 2 | 3 | 4 = 1;
-      if (route === '/checkout/delivery') activeStep = 2;
-      if (route === '/checkout/payment') activeStep = 3;
-      if (route === '/checkout/review') activeStep = 4;
+      if (checkoutPath === '/checkout/delivery') activeStep = 2;
+      else if (checkoutPath === '/checkout/payment') activeStep = 3;
+      else if (checkoutPath === '/checkout/review') activeStep = 4;
+      else activeStep = 1; // /checkout/address or /checkout
 
       return (
         <CheckoutPage 
-          cartItems={cartItems} 
+          key={checkoutPath}
+          cartItems={cartItems.length > 0 ? cartItems : [
+            {
+              id: 'cart-demo',
+              listingId: 'crop-001',
+              crop: mockCropListings[0],
+              quantity: 25,
+              selectedTierPrice: 120,
+              subtotal: 3000,
+              fulfillmentType: 'delivery'
+            }
+          ]} 
           currentUser={currentUser} 
           onNavigate={navigate} 
           onPlaceOrder={handlePlaceOrder}
