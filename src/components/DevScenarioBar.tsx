@@ -73,6 +73,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
         { path: '/register', label: '17 /register Unified Buyer & Farmer Registration' },
         { path: '/register/buyer', label: '18 /register/buyer (Pre-selected Buyer)' },
         { path: '/register/farmer', label: '19 /register/farmer (Pre-selected Farmer)' },
+        { path: '/register/farmer/credentials', label: '19b /register/farmer/credentials (RSBSA & Gov ID)' },
         { path: '/verify-contact', label: '20 /verify-contact (Simulated 6-digit OTP)' },
         { path: '/forgot-password', label: '22 /forgot-password (Simulated Modal)' }
       ]

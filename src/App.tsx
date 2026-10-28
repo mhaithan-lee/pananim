@@ -623,6 +623,20 @@ export const App: React.FC = () => {
       );
     }
 
+    if (route === '/register/farmer/credentials') {
+      return (
+        <RegisterPage 
+          initialRole="farmer"
+          initialStep={3}
+          onNavigate={navigate} 
+          onLoginSuccess={(u) => { 
+            setCurrentUser(u); 
+            setCurrentRole('farmer'); 
+          }} 
+        />
+      );
+    }
+
     if (route === '/verify-contact') {
       return (
         <VerifyContactPage 

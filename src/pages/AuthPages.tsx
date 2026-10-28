@@ -18,7 +18,8 @@ import {
   ArrowLeft,
   Award,
   Store,
-  Sprout
+  Sprout,
+  FileCheck
 } from 'lucide-react';
 import { Logo } from '../components/Logo';
 
@@ -420,7 +421,7 @@ interface RegisterPageProps {
   onNavigate: (route: string) => void;
   onLoginSuccess?: (user: User) => void;
   initialRole?: 'buyer' | 'farmer';
-  initialStep?: 1 | 2 | 3;
+  initialStep?: 1 | 2 | 3 | 4;
 }
 
 export const RegisterPage: React.FC<RegisterPageProps> = ({ 
@@ -430,7 +431,7 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
   initialStep = 1
 }) => {
   const [role, setRole] = useState<'buyer' | 'farmer'>(initialRole);
-  const [step, setStep] = useState<1 | 2 | 3>(initialStep);
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(initialStep);
   const [registeredUser, setRegisteredUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -458,6 +459,12 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
   const [farmName, setFarmName] = useState('Santos Organic Farms');
   const [province, setProvince] = useState('Benguet');
   const [farmHectares, setFarmHectares] = useState('4.5');
+
+  // Government & Farm Credentials State (Mockup UI)
+  const [rsbsaNumber, setRsbsaNumber] = useState('RSBSA-03-54-001928');
+  const [govIdType, setGovIdType] = useState('PhilSys National ID');
+  const [barangayClearanceLocation, setBarangayClearanceLocation] = useState('San Rafael, Bulacan');
+  const [isSubmittingCredentials, setIsSubmittingCredentials] = useState(false);
 
   // Simulated OTP State
   const [demoOtp, setDemoOtp] = useState('849201');
@@ -544,8 +551,50 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
         onLoginSuccess(newUser);
       }
 
-      setStep(3);
+      if (role === 'farmer') {
+        setStep(3);
+      } else {
+        setStep(4);
+      }
     }, 350);
+  };
+
+  const handleSubmitFarmerCredentials = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingCredentials(true);
+
+    setTimeout(() => {
+      setIsSubmittingCredentials(false);
+      const updatedUser: User = {
+        ...(registeredUser || {
+          id: `farmer-${Date.now()}`,
+          name: `${firstName} ${lastName}`.trim(),
+          email,
+          phone,
+          role: 'farmer' as Role,
+          businessName: farmName,
+          avatarUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=200&q=80',
+          isEmailVerified: true,
+          isPhoneVerified: true
+        }),
+        rsbsaNumber,
+        govIdType,
+        location: barangayClearanceLocation,
+        isFarmerVerified: true
+      } as any;
+
+      setRegisteredUser(updatedUser);
+      try {
+        localStorage.setItem('pananim_demo_user', JSON.stringify(updatedUser));
+        localStorage.setItem('pananim_demo_role', 'farmer');
+      } catch (err) {}
+
+      if (onLoginSuccess) {
+        onLoginSuccess(updatedUser);
+      }
+
+      setStep(4);
+    }, 400);
   };
 
   const handleResendOtp = () => {
@@ -575,12 +624,19 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
             <Logo size="md" variant="green" showTagline={true} />
           </div>
           <h1 style={{ fontSize: '2.1rem', color: '#0C3C2C', fontWeight: 800, marginBottom: '0.35rem' }}>
-            {step === 1 ? 'Create Your Pananim Account' : step === 2 ? 'Verify Contact Number' : 'Welcome to Pananim!'}
+            {step === 1 
+              ? 'Create Your Pananim Account' 
+              : step === 2 
+                ? 'Verify Contact Number' 
+                : (step === 3 && role === 'farmer')
+                  ? 'Government & Farm Credentials'
+                  : 'Welcome to Pananim!'}
           </h1>
           <p style={{ fontSize: '0.85rem', color: '#574A46' }}>
             {step === 1 && 'Join the digital marketplace connecting Filipino agricultural producers with wholesale buyers.'}
             {step === 2 && `Simulated 6-digit confirmation code dispatched to ${phone}.`}
-            {step === 3 && 'Your demo registration is complete and your workspace is ready.'}
+            {step === 3 && role === 'farmer' && 'DA RSBSA registry validation and identity accreditation for direct wholesale trade.'}
+            {((step === 4) || (step === 3 && role === 'buyer')) && 'Your demo registration is complete and your workspace is ready.'}
           </p>
 
           {/* Stepper Progress Bar */}
@@ -598,12 +654,25 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
               </div>
               <span style={{ fontSize: '0.78rem', fontWeight: step === 2 ? 700 : 500, color: step >= 2 ? '#0C3C2C' : '#8A7B76' }}>Verification</span>
             </div>
-            <div style={{ width: '32px', height: '2px', backgroundColor: step >= 3 ? '#0C3C2C' : '#DECDBD' }} />
+
+            {role === 'farmer' && (
+              <>
+                <div style={{ width: '32px', height: '2px', backgroundColor: step >= 3 ? '#0C3C2C' : '#DECDBD' }} />
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: step >= 3 ? '#0C3C2C' : '#DECDBD', color: '#FFFFFF', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    3
+                  </div>
+                  <span style={{ fontSize: '0.78rem', fontWeight: step === 3 ? 700 : 500, color: step >= 3 ? '#0C3C2C' : '#8A7B76' }}>Credentials</span>
+                </div>
+              </>
+            )}
+
+            <div style={{ width: '32px', height: '2px', backgroundColor: (role === 'farmer' ? step >= 4 : step >= 3) ? '#0C3C2C' : '#DECDBD' }} />
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: step >= 3 ? '#0C3C2C' : '#DECDBD', color: '#FFFFFF', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                3
+              <div style={{ width: '24px', height: '24px', borderRadius: '50%', backgroundColor: (role === 'farmer' ? step >= 4 : step >= 3) ? '#0C3C2C' : '#DECDBD', color: '#FFFFFF', fontSize: '0.75rem', fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {role === 'farmer' ? '4' : '3'}
               </div>
-              <span style={{ fontSize: '0.78rem', fontWeight: step === 3 ? 700 : 500, color: step >= 3 ? '#0C3C2C' : '#8A7B76' }}>Complete</span>
+              <span style={{ fontSize: '0.78rem', fontWeight: (role === 'farmer' ? step === 4 : step === 3) ? 700 : 500, color: (role === 'farmer' ? step >= 4 : step >= 3) ? '#0C3C2C' : '#8A7B76' }}>Complete</span>
             </div>
           </div>
         </div>
@@ -1007,8 +1076,226 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
           </div>
         )}
 
-        {/* STEP 3: WELCOME SCREEN (CELEBRATORY & INTERACTIVE) */}
-        {step === 3 && (
+        {/* STEP 3 (FARMER ONLY): GOVERNMENT & FARM CREDENTIALS */}
+        {step === 3 && role === 'farmer' && (
+          <div className="card" style={{ padding: '2.5rem', backgroundColor: '#FFFFFF', borderRadius: '16px', boxShadow: '0 4px 20px rgba(12, 60, 44, 0.08)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1.75rem' }}>
+              <div style={{ width: '38px', height: '38px', borderRadius: '10px', backgroundColor: '#FEF3E2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ShieldCheck size={22} color="#D48216" />
+              </div>
+              <h2 style={{ fontSize: '1.45rem', color: '#0C3C2C', fontWeight: 800, margin: 0 }}>
+                Government &amp; Farm Credentials
+              </h2>
+            </div>
+
+            <form onSubmit={handleSubmitFarmerCredentials} style={{ display: 'flex', flexDirection: 'column', gap: '1.35rem' }}>
+              {/* RSBSA Registration Number */}
+              <div>
+                <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 700, color: '#1D2D24', marginBottom: '6px' }}>
+                  RSBSA Registration Number *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={rsbsaNumber}
+                  onChange={(e) => setRsbsaNumber(e.target.value)}
+                  placeholder="RSBSA-03-54-001928"
+                  style={{
+                    width: '100%',
+                    padding: '11px 14px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #DECDBD',
+                    fontSize: '0.95rem',
+                    color: '#0C3C2C',
+                    backgroundColor: '#FAF7F2',
+                    boxSizing: 'border-box'
+                  }}
+                />
+                <span style={{ fontSize: '0.74rem', color: '#8A7B76', marginTop: '5px', display: 'block' }}>
+                  Registry System for Basic Sectors in Agriculture (DA accredited)
+                </span>
+              </div>
+
+              {/* ID Type & Barangay Location */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 700, color: '#1D2D24', marginBottom: '6px' }}>
+                    Government ID Type *
+                  </label>
+                  <select
+                    value={govIdType}
+                    onChange={(e) => setGovIdType(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '11px 14px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #DECDBD',
+                      fontSize: '0.9rem',
+                      color: '#0C3C2C',
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <option value="PhilSys National ID">PhilSys National ID</option>
+                    <option value="Driver's License">Driver's License</option>
+                    <option value="Passport">Philippine Passport</option>
+                    <option value="UMID">UMID / SSS</option>
+                    <option value="Barangay Certificate with Photo">Barangay Certificate with Photo</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.825rem', fontWeight: 700, color: '#1D2D24', marginBottom: '6px' }}>
+                    Barangay Clearance Location
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={barangayClearanceLocation}
+                    onChange={(e) => setBarangayClearanceLocation(e.target.value)}
+                    placeholder="San Rafael, Bulacan"
+                    style={{
+                      width: '100%',
+                      padding: '11px 14px',
+                      borderRadius: '8px',
+                      border: '1.5px solid #DECDBD',
+                      fontSize: '0.9rem',
+                      color: '#0C3C2C',
+                      backgroundColor: '#FAF7F2',
+                      boxSizing: 'border-box'
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Uploaded Verification Files (Demo) */}
+              <div style={{
+                border: '1.5px dashed #DECDBD',
+                borderRadius: '12px',
+                padding: '1.25rem',
+                backgroundColor: '#FAF7F2'
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                  <span style={{ fontSize: '0.825rem', fontWeight: 800, color: '#0C3C2C' }}>
+                    Uploaded Verification Files (Demo)
+                  </span>
+                  <span style={{ fontSize: '0.72rem', color: '#1B7A43', fontWeight: 700 }}>
+                    Pre-loaded for simulated evaluation
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  <div style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #EBE4DA',
+                    borderRadius: '8px',
+                    padding: '10px 14px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <FileCheck size={18} color="#1B7A43" />
+                      <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#1D2D24' }}>
+                        RSBSA_Certificate_2026.pdf
+                      </span>
+                    </div>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      color: '#1B7A43',
+                      letterSpacing: '0.08em',
+                      backgroundColor: '#E2ECE5',
+                      padding: '3px 8px',
+                      borderRadius: '4px'
+                    }}>
+                      VERIFIED
+                    </span>
+                  </div>
+
+                  <div style={{
+                    backgroundColor: '#FFFFFF',
+                    border: '1px solid #EBE4DA',
+                    borderRadius: '8px',
+                    padding: '10px 14px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <FileCheck size={18} color="#1B7A43" />
+                      <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#1D2D24' }}>
+                        PhilSys_National_ID_Front.jpg
+                      </span>
+                    </div>
+                    <span style={{
+                      fontSize: '0.72rem',
+                      fontWeight: 800,
+                      color: '#1B7A43',
+                      letterSpacing: '0.08em',
+                      backgroundColor: '#E2ECE5',
+                      padding: '3px 8px',
+                      borderRadius: '4px'
+                    }}>
+                      VERIFIED
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <button
+                  type="submit"
+                  disabled={isSubmittingCredentials}
+                  style={{
+                    width: '100%',
+                    backgroundColor: '#D48216',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '13px 20px',
+                    fontSize: '0.975rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    boxShadow: '0 4px 14px rgba(212, 130, 22, 0.25)',
+                    transition: 'all 0.15s ease'
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#BA6F0F'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#D48216'; }}
+                >
+                  <ShieldCheck size={18} />
+                  <span>{isSubmittingCredentials ? 'Validating DA Registry...' : 'Submit Credentials for DA Review'}</span>
+                </button>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 4px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setStep(2)}
+                    style={{ background: 'none', border: 'none', color: '#8A7B76', fontSize: '0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    <ArrowLeft size={14} /> Back to OTP
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setStep(4)}
+                    style={{ background: 'none', border: 'none', color: '#0C3C2C', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    Skip credentials for now &rarr;
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* STEP 4 (OR STEP 3 FOR BUYER): WELCOME SCREEN (CELEBRATORY & INTERACTIVE) */}
+        {((step === 4) || (step === 3 && role === 'buyer')) && (
           <div className="card" style={{ padding: '3.5rem 2.5rem', backgroundColor: '#FFFFFF', borderRadius: '18px', boxShadow: '0 8px 30px rgba(12, 60, 44, 0.1)', textAlign: 'center', border: '1px solid #EBE4DA' }}>
             <div style={{ position: 'relative', width: '76px', height: '76px', margin: '0 auto 1.5rem auto' }}>
               <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', backgroundColor: '#D1E7DD', opacity: 0.7, transform: 'scale(1.2)' }} />
@@ -1052,6 +1339,14 @@ export const RegisterPage: React.FC<RegisterPageProps> = ({
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <span style={{ color: '#8A7B76' }}>Farm / Cooperative:</span>
                     <strong style={{ color: '#0C3C2C' }}>{farmName} ({province})</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ color: '#8A7B76' }}>RSBSA Number:</span>
+                    <strong style={{ color: '#0C3C2C' }}>{rsbsaNumber}</strong>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <span style={{ color: '#8A7B76' }}>Clearance Hub:</span>
+                    <strong style={{ color: '#0C3C2C' }}>{barangayClearanceLocation} ({govIdType})</strong>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                     <span style={{ color: '#8A7B76' }}>Land Area:</span>
@@ -1189,7 +1484,7 @@ export const VerifyContactPage: React.FC<{
   onNavigate: (route: string) => void; 
   onLoginSuccess?: (user: User) => void; 
   initialRole?: 'buyer' | 'farmer';
-  initialStep?: 1 | 2 | 3;
+  initialStep?: 1 | 2 | 3 | 4;
 }> = ({ onNavigate, onLoginSuccess, initialRole = 'farmer', initialStep = 2 }) => {
   return <RegisterPage onNavigate={onNavigate} onLoginSuccess={onLoginSuccess} initialRole={initialRole} initialStep={initialStep} />;
 };
