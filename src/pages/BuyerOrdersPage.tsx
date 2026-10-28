@@ -13,7 +13,8 @@ import {
   Star,
   X,
   CheckCircle2,
-  Camera
+  Camera,
+  Bell
 } from 'lucide-react';
 import { useChat } from '../context/ChatContext';
 
@@ -21,15 +22,17 @@ interface BuyerOrdersPageProps {
   orders: OrderGroup[];
   onNavigate: (route: string) => void;
   onTrackOrder: (orderId: string) => void;
+  initialTab?: 'active' | 'history';
 }
 
 export const BuyerOrdersPage: React.FC<BuyerOrdersPageProps> = ({
   orders,
   onNavigate,
-  onTrackOrder
+  onTrackOrder,
+  initialTab = 'active'
 }) => {
   const { openChatWithSeller, unreadCount } = useChat();
-  const [activeTab, setActiveTab] = useState<'active' | 'history'>('active');
+  const [activeTab, setActiveTab] = useState<'active' | 'history'>(initialTab);
   const [searchId, setSearchId] = useState('');
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
@@ -129,6 +132,24 @@ export const BuyerOrdersPage: React.FC<BuyerOrdersPageProps> = ({
                   {unreadCount}
                 </span>
               )}
+            </button>
+            <button
+              onClick={() => onNavigate('/buyer/notifications')}
+              style={{
+                fontFamily: 'var(--font-headings)',
+                fontWeight: 700,
+                fontSize: '1rem',
+                color: '#8A7B76',
+                borderBottom: '3px solid transparent',
+                paddingBottom: '0.75rem',
+                marginBottom: '-2px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.45rem'
+              }}
+            >
+              <Bell size={16} />
+              Notifications
             </button>
           </div>
 

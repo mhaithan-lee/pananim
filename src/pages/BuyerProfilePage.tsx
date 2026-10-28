@@ -118,6 +118,24 @@ export const BuyerProfilePage: React.FC<BuyerProfilePageProps> = ({
             >
               <Settings size={18} /> Account Settings
             </button>
+
+            <button
+              onClick={() => onNavigate('/buyer/notifications')}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.75rem',
+                padding: '0.85rem 1.25rem',
+                borderRadius: '10px',
+                backgroundColor: 'transparent',
+                color: '#574A46',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                textAlign: 'left'
+              }}
+            >
+              <Bell size={18} /> Notification Center
+            </button>
           </div>
 
           {/* Right Content Panels matching Screenshot 215538 */}

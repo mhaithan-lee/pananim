@@ -191,18 +191,19 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
             {/* Notifications link */}
             <button
-              onClick={() => onNavigate(currentRole === 'farmer' ? '/farmer/dashboard' : '/buyer/dashboard')}
+              onClick={() => onNavigate(currentRole === 'farmer' ? '/farmer/dashboard' : '/buyer/notifications')}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.35rem',
-                color: '#E2ECE5',
+                color: currentRoute.startsWith('/buyer/notifications') ? '#D48216' : '#E2ECE5',
+                fontWeight: currentRoute.startsWith('/buyer/notifications') ? 700 : 400,
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
                 fontSize: '0.75rem'
               }}
-              title="Notifications"
+              title="Notifications & Price Alerts"
             >
               <div style={{ position: 'relative', display: 'inline-flex' }}>
                 <Bell size={13} />
@@ -210,14 +211,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span
                     style={{
                       position: 'absolute',
-                      top: '-3px',
-                      right: '-3px',
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      backgroundColor: '#D48216'
+                      top: '-4px',
+                      right: '-6px',
+                      backgroundColor: '#D48216',
+                      color: '#FFFFFF',
+                      fontSize: '0.55rem',
+                      fontWeight: 800,
+                      padding: '0.05rem 0.25rem',
+                      borderRadius: '10px',
+                      lineHeight: 1
                     }}
-                  />
+                  >
+                    {unreadNotificationsCount}
+                  </span>
                 )}
               </div>
               <span>Notifications</span>
@@ -374,6 +380,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                           {totalUnreadBuyer > 0 && (
                             <span style={{ backgroundColor: '#9B3C1B', color: '#FFFFFF', fontSize: '0.65rem', fontWeight: 800, padding: '1px 6px', borderRadius: '10px' }}>
                               {totalUnreadBuyer}
+                            </span>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => { onNavigate('/buyer/notifications'); setUserDropdownOpen(false); }}
+                          style={{ width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem', fontSize: '0.825rem', color: '#0C3C2C', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <Bell size={14} /> Notifications
+                          </div>
+                          {unreadNotificationsCount > 0 && (
+                            <span style={{ backgroundColor: '#D48216', color: '#FFFFFF', fontSize: '0.65rem', fontWeight: 800, padding: '1px 6px', borderRadius: '10px' }}>
+                              {unreadNotificationsCount}
                             </span>
                           )}
                         </button>

@@ -40,6 +40,11 @@ import { CheckoutPage } from './pages/CheckoutPage';
 import { OrderConfirmationPage } from './pages/OrderConfirmationPage';
 import { BuyerOrdersPage } from './pages/BuyerOrdersPage';
 import { BuyerProfilePage } from './pages/BuyerProfilePage';
+import { 
+  BuyerNotificationsPage, 
+  INITIAL_BUYER_NOTIFICATIONS, 
+  BuyerNotificationItem 
+} from './pages/BuyerNotificationsPage';
 
 // Redesigned Farmer Workspace Components (from /farmer PNG references)
 import { FarmerLayout } from './farmer/FarmerLayout';
@@ -128,6 +133,7 @@ export const App: React.FC = () => {
   const [orders, setOrders] = useState<OrderGroup[]>(mockOrders);
   const [reviews, setReviews] = useState<CropReview[]>(mockReviews);
   const [applications, setApplications] = useState<VerificationApplication[]>(mockVerificationApplications);
+  const [buyerNotifications, setBuyerNotifications] = useState<BuyerNotificationItem[]>(INITIAL_BUYER_NOTIFICATIONS);
 
   // Cart State (Preloaded with Santos Farms delivery items for rich initial realism)
   const [cartItems, setCartItems] = useState<CartItem[]>([
@@ -311,6 +317,25 @@ export const App: React.FC = () => {
   const handlePlaceOrder = (newOrder: OrderGroup) => {
     setOrders([newOrder, ...orders]);
     setCartItems([]);
+    setBuyerNotifications((prev) => [
+      {
+        id: `notif-order-${Date.now()}`,
+        category: 'orders_logistics',
+        title: `Order #${newOrder.id} Placed in Escrow (₱${newOrder.grandTotal.toLocaleString()})`,
+        body: `Your wholesale order across ${newOrder.sellerOrders.length} farm(s) has been logged. Farmers have been notified to confirm stock and schedule dispatch.`,
+        timestamp: 'Just now',
+        sortOrder: 999,
+        isRead: false,
+        isUrgent: false,
+        referenceCode: newOrder.id,
+        farmName: newOrder.sellerOrders.map(so => so.farmName).join(', '),
+        primaryActionLabel: 'View Order Confirmation',
+        primaryActionRoute: `/orders/${newOrder.id}/confirmation`,
+        secondaryActionLabel: 'Track Order',
+        secondaryActionRoute: `/buyer/orders/${newOrder.id}/tracking`
+      },
+      ...prev
+    ]);
   };
 
   const handleUpdateCropStock = (cropId: string, newStock: number) => {
@@ -490,12 +515,20 @@ export const App: React.FC = () => {
     }
 
     // General Orders / Buyer Dashboard
-    if (route === '/buyer/orders' || route === '/buyer/dashboard' || route === '/orders') {
+    if (
+      route === '/buyer/orders' || 
+      route.startsWith('/buyer/orders?') || 
+      route === '/buyer/dashboard' || 
+      route === '/orders'
+    ) {
+      const isHistory = route.includes('tab=history');
       return (
         <BuyerOrdersPage 
+          key={isHistory ? 'history' : 'active'}
           orders={orders} 
           onNavigate={navigate} 
           onTrackOrder={(orderId) => navigate(`/buyer/orders/${orderId}/tracking`)}
+          initialTab={isHistory ? 'history' : 'active'}
         />
       );
     }
@@ -560,6 +593,20 @@ export const App: React.FC = () => {
 
     if (route === '/buyer/messages' || route.startsWith('/buyer/messages')) {
       return <MessagesInboxPage isFarmer={false} onNavigate={navigate} />;
+    }
+
+    if (
+      route === '/buyer/notifications' || 
+      route === '/notifications' || 
+      route.startsWith('/buyer/notifications')
+    ) {
+      return (
+        <BuyerNotificationsPage 
+          notifications={buyerNotifications}
+          onUpdateNotifications={setBuyerNotifications}
+          onNavigate={navigate} 
+        />
+      );
     }
 
     // Informational pages
@@ -913,6 +960,7 @@ export const App: React.FC = () => {
               currentUser={currentUser} 
               currentRole={currentRole} 
               cartCount={cartItems.length} 
+              unreadNotificationsCount={buyerNotifications.filter(n => !n.isRead).length}
               onLogout={handleLogout}
             />
 

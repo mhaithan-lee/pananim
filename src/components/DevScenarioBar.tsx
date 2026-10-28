@@ -93,6 +93,7 @@ export const DevScenarioBar: React.FC<DevScenarioBarProps> = ({
         { path: '/buyer/orders/ORD-2026-8842/invoice', label: '37 /buyer/orders/:id/invoice Print (Dynamic)' },
         { path: '/buyer/orders/ORD-2026-8842/issue', label: '38 /buyer/orders/:id/issue Dispute (Dynamic)' },
         { path: '/buyer/messages', label: 'Buyer Messages (Direct Seller Chat)' },
+        { path: '/buyer/notifications', label: '51 /buyer/notifications Alerts & Price Watch' },
         { path: '/buyer/profile', label: '49 /buyer/profile Addresses & Settings' }
       ]
     },
